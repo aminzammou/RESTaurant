@@ -21,7 +21,9 @@ services:
     volumes:
       - ./mongodb/volume/data/:/data/db/
   authentication_app:
-    image: authentication
+    build:
+      context: ../authentication
+      dockerfile: ../authentication/Dockerfile
     ports:
       - 8081:8080
 
@@ -35,7 +37,9 @@ services:
 #    ports:
 #      - 8083:8080
 #
-#  stock_app:
-#    image: stock_app
-#    ports:
-#      - 8084:8080
+  stock_app:
+    build:
+      context: ../stock
+      dockerfile: ../stock/Dockerfile
+    ports:
+      - 8084:8080
