@@ -4,8 +4,8 @@ services:
   rabbitmq:
     image: rabbitmq:3-management-alpine
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - ./rabbitmq/volume/data/:/var/lib/rabbitmq/
       - ./rabbitmq/volume/log/:/var/log/rabbitmq/
@@ -17,19 +17,19 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
     ports:
-      - 27017:27017
+      - "27017:27017"
     volumes:
       - ./mongodb/volume/data/:/data/db/
-  authentication_app:
-    image: authentication
-    ports:
-      - 8081:8080
-
-#  menu_app:
-#    image: menu_app
+#  authentication_app:
+#    image: authentication
 #    ports:
-#      - 8082:8080
-#
+#      - 8081:8080
+
+  menu_app:
+    image: menu_app
+    ports:
+      - 8082:8080
+
 #  order_app:
 #    image: order_app
 #    ports:
