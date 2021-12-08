@@ -17,7 +17,3 @@ services:
       - "27017:27017"
     volumes:
       - ./mongodb/volume/data/:/data/db/
-  authentication:
-    image: authentication
-    ports:
-      - "8081:8080"
