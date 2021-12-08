@@ -1,5 +1,7 @@
 package com.restaurant.authentication.infrastructure.web.request;
 
-public class ChangeUserRoleRequest {
-    public String role;
+public record ChangeUserRoleRequest(String role) {
+    public String getRole() {
+        return role;
+    }
 }

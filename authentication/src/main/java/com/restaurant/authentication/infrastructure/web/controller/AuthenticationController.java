@@ -8,6 +8,7 @@ import com.restaurant.authentication.core.application.handler.AuthenticationQuer
 import com.restaurant.authentication.core.application.query.GetUserQuery;
 import com.restaurant.authentication.core.domain.entity.User;
 import com.restaurant.authentication.core.domain.exception.InvalidUserRole;
+import com.restaurant.authentication.core.domain.exception.UserAlreadyExisting;
 import com.restaurant.authentication.core.domain.exception.UserNotFound;
 import com.restaurant.authentication.infrastructure.web.request.ChangeUserRoleRequest;
 import com.restaurant.authentication.infrastructure.web.request.RegisterUserRequest;
@@ -37,14 +38,14 @@ public class AuthenticationController {
     @PatchMapping("/user/password/{id}")
     public User resetUserPassword(@PathVariable String username, @RequestBody ResetUserPasswordRequest request) {
         return this.commandHandler.handle(
-                new ResetUserPasswordCommand(username, request.password)
+                new ResetUserPasswordCommand(username, request.getPassword())
         );
     }
 
     @PatchMapping("/user/role/{id}")
     public User changeUserRole(@PathVariable String username, @RequestBody ChangeUserRoleRequest request) {
         return this.commandHandler.handle(
-                new ChangeUserRoleCommand(username, request.role)
+                new ChangeUserRoleCommand(username, request.getRole())
         );
     }
 
@@ -54,12 +55,17 @@ public class AuthenticationController {
     }
 
     @ExceptionHandler
+    public ResponseEntity<Void> handleUserAlreadyExisting(UserAlreadyExisting exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    @ExceptionHandler
     public ResponseEntity<Void> handleUserNotFound(UserNotFound exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @ExceptionHandler
-    public ResponseEntity<Void> handleUserNotFound(InvalidUserRole exception) {
+    public ResponseEntity<Void> handleInvalidUserRole(InvalidUserRole exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
