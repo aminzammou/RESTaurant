@@ -35,21 +35,21 @@ public class AuthenticationController {
         );
     }
 
-    @PatchMapping("/user/password/{id}")
+    @PatchMapping("/user/password/{username}")
     public User resetUserPassword(@PathVariable String username, @RequestBody ResetUserPasswordRequest request) {
         return this.commandHandler.handle(
                 new ResetUserPasswordCommand(username, request.getPassword())
         );
     }
 
-    @PatchMapping("/user/role/{id}")
+    @PatchMapping("/user/role/{username}")
     public User changeUserRole(@PathVariable String username, @RequestBody ChangeUserRoleRequest request) {
         return this.commandHandler.handle(
                 new ChangeUserRoleCommand(username, request.getRole())
         );
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/user/{username}")
     public User getUser(@PathVariable String username) {
         return this.queryHandler.handle(new GetUserQuery(username));
     }
