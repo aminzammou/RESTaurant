@@ -1,12 +1,12 @@
-package com.restaurant.menu.core.domain.event;
+package com.restaurant.menu.core.application.query;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.UUID;
 
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 public class GetDishById {
     private final UUID id;
 }

@@ -3,11 +3,11 @@ package com.restaurant.menu.core.domain.event;
 import lombok.Getter;
 
 @Getter
-public class ListDishes {
+public class ListIngredients {
     private final String orderBy;
     private final String direction;
 
-    public ListDishes(String orderBy, String direction) {
+    public ListIngredients(String orderBy, String direction) {
         if (orderBy == null) {
             orderBy = "name";
         }
@@ -19,6 +19,4 @@ public class ListDishes {
         this.orderBy = orderBy;
         this.direction = direction;
     }
-
-
 }
