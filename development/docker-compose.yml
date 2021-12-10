@@ -1,4 +1,8 @@
 version: "3.7"
+
+volumes:
+  mongodata:
+
 services:
   # https://hub.docker.com/_/rabbitmq
   rabbitmq:
@@ -7,7 +11,7 @@ services:
       - 5672:5672
       - 15672:15672
     volumes:
-      - ./rabbitmq/volume/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/volume/data/mnesia:/var/lib/rabbitmq/mnesia
       - ./rabbitmq/volume/log/:/var/log/rabbitmq/
 
   # https://hub.docker.com/_/mongo
@@ -19,23 +23,45 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ./mongodb/volume/data/:/data/db/
+      - mongodata:/data/db/
   authentication_app:
+    depends_on:
+      - mongodb
+      - rabbitmq
     image: authentication
     ports:
       - 8081:8080
+  sample_app:
+    depends_on:
+      - mongodb
+      - rabbitmq
+    image: sample_app
+    environment:
+      - SPRING_DATA_MONGODB_HOST= mongodb
+      - SPRING_RABBITMQ_HOST= rabbitmq
+    ports:
+      - 8086:8080
 
 #  menu_app:
+#    depends_on:
+#      - mongodb
+#      - rabbitmq
 #    image: menu_app
 #    ports:
 #      - 8082:8080
 #
 #  order_app:
+#    depends_on:
+#      - mongodb
+#      - rabbitmq
 #    image: order_app
 #    ports:
 #      - 8083:8080
 #
 #  stock_app:
+#    depends_on:
+#      - mongodb
+#      - rabbitmq
 #    image: stock_app
 #    ports:
 #      - 8084:8080
