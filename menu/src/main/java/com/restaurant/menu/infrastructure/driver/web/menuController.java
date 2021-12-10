@@ -6,8 +6,10 @@ import com.restaurant.menu.core.application.command.CreateDish;
 import com.restaurant.menu.core.application.command.RemoveIngredient;
 import com.restaurant.menu.core.application.command.RenameDish;
 import com.restaurant.menu.core.application.query.GetDishById;
+import com.restaurant.menu.core.application.query.GetDisheshByOrder;
 import com.restaurant.menu.core.domain.Dish;
 import com.restaurant.menu.core.application.*;
+import com.restaurant.menu.core.domain.DishId;
 import com.restaurant.menu.core.domain.Ingredient;
 import com.restaurant.menu.core.application.query.ListDishes;
 import com.restaurant.menu.core.domain.event.ListIngredients;
@@ -43,6 +45,11 @@ public class menuController {
     @GetMapping("/dish/{id}")
     public Dish findDishById(@PathVariable String id) {
         return this.queryHandler.handle(new GetDishById(UUID.fromString(id)));
+    }
+
+    @GetMapping("/dish/order")
+    public List<Dish> findDishesByOrder(@RequestBody List<DishId> listId) {
+        return this.queryHandler.handle(new GetDisheshByOrder(listId));
     }
 
     @GetMapping("/ingredients")
