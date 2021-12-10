@@ -1,6 +1,7 @@
 package com.restaurant.authentication.core.application.handler;
 
 import com.restaurant.authentication.core.application.command.ChangeUserRoleCommand;
+import com.restaurant.authentication.core.application.command.DeleteUserCommand;
 import com.restaurant.authentication.core.application.command.RegisterUserCommand;
 import com.restaurant.authentication.core.application.command.ResetUserPasswordCommand;
 import com.restaurant.authentication.core.domain.entity.Role;
@@ -68,6 +69,19 @@ public class AuthenticationCommandHandler {
 
         this.publishEvents(user);
         this.userRepository.save(user);
+
+        return user;
+    }
+
+    public User handle(DeleteUserCommand command) {
+        if(this.userRepository.findById(command.getUsername()).isEmpty()) {
+            throw new UserNotFound(command.getUsername());
+        }
+
+        User user = this.userRepository.findById(command.getUsername()).get();
+
+        this.publishEvents(user);
+        this.userRepository.delete(user);
 
         return user;
     }

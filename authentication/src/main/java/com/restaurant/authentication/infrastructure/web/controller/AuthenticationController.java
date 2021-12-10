@@ -1,6 +1,7 @@
 package com.restaurant.authentication.infrastructure.web.controller;
 
 import com.restaurant.authentication.core.application.command.ChangeUserRoleCommand;
+import com.restaurant.authentication.core.application.command.DeleteUserCommand;
 import com.restaurant.authentication.core.application.command.RegisterUserCommand;
 import com.restaurant.authentication.core.application.command.ResetUserPasswordCommand;
 import com.restaurant.authentication.core.application.handler.AuthenticationCommandHandler;
@@ -46,6 +47,13 @@ public class AuthenticationController {
     public User changeUserRole(@PathVariable String username, @RequestBody ChangeUserRoleRequest request) {
         return this.commandHandler.handle(
                 new ChangeUserRoleCommand(username, request.getRole())
+        );
+    }
+
+    @DeleteMapping("/user/{username}")
+    public User deleteUser(@PathVariable String username) {
+        return this.commandHandler.handle(
+                new DeleteUserCommand(username)
         );
     }
 
