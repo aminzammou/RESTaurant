@@ -27,14 +27,14 @@ public class OrderController {
     }
 
     @PostMapping
-    public Order registerJob(@Valid @RequestBody CreateOrderRequest request) {
+    public Order registerOrder(@Valid @RequestBody CreateOrderRequest request) {
         return this.commandHandler.handle(
                 new CreateOrder(request.customerNote)
         );
     }
 
     @PostMapping("/{id}/change-status")
-    public Order changeEmail(@PathVariable UUID id, @Valid @RequestBody ChangeOrderStatusRequest request) {
+    public Order changeStatus(@PathVariable UUID id, @Valid @RequestBody ChangeOrderStatusRequest request) {
         return this.commandHandler.handle(new ChangeOrderStatus(id, request.status));
     }
 
@@ -50,5 +50,10 @@ public class OrderController {
     ) {
         return this.queryHandler.handle(new ListOrders(orderBy, direction));
     }
+
+//    @DeleteMapping("/{id}")
+//    public Order removeKeyword(@PathVariable UUID id, @Valid @RequestBody KeywordRequest request) {
+//        return this.commandHandler.handle(new RemoveKeyword(id, request.keyword));
+//    }
 
 }

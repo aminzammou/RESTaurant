@@ -2,6 +2,7 @@ package com.restaurant.order.core.application;
 
 import com.restaurant.order.core.application.command.ChangeOrderStatus;
 import com.restaurant.order.core.application.command.CreateOrder;
+import com.restaurant.order.core.application.command.RemoveOrder;
 import com.restaurant.order.core.domain.Order;
 import com.restaurant.order.core.domain.exception.OrderNotFound;
 import com.restaurant.order.core.ports.storage.OrderRepository;
@@ -39,6 +40,15 @@ public class OrderCommandHandler {
         return this.repository.findByOrderId(id)
                 .orElseThrow(() -> new OrderNotFound(id.toString()));
     }
+
+//    public Order handle(RemoveOrder command) {
+//        Order order = this.getOrderById(command.getId());
+//
+//        order.removeKeyword(command.getKeyword());
+//        this.repository.save(candidate);
+//
+//        return candidate;
+//    }
 
     private void publishEventsAndSave(Order order) {
 //        List<JobEvent> events = job.listEvents();
