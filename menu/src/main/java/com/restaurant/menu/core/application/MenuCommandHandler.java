@@ -21,7 +21,7 @@ public class MenuCommandHandler {
     }
 
     public Dish handle(CreateDish command) {
-        Dish dish = new Dish(command.getName(), command.getCategory(), command.getPrice(), command.getIngredientList());
+        Dish dish = new Dish(command.getName(), command.getCategory(), command.getPrice(), command.getState(), command.getIngredientList());
 
         this.dishRepository.save(dish);
 

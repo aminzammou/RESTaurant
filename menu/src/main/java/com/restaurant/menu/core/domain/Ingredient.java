@@ -18,5 +18,4 @@ public class Ingredient {
     private IngredientId ingredientId;
     private String name;
     private int amount;
-
 }

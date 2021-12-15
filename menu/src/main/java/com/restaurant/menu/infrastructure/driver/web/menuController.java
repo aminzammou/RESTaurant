@@ -62,7 +62,7 @@ public class menuController {
 
     @PostMapping("/dish")
     public Dish createDish(@Valid @RequestBody CreateDishRequest request) {
-        return this.commandHandler.handle(new CreateDish(request.name, request.category, request.price, request.ingredientList)
+        return this.commandHandler.handle(new CreateDish(request.name, request.category, request.price, request.state, request.ingredientList)
         );
     }
 
