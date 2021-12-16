@@ -11,5 +11,5 @@ import java.util.UUID;
 @Getter
 public class RemoveIngredient {
     private final UUID id;
-    private final Ingredient ingredient;
+    private final IngredientId ingredientid;
 }

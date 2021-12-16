@@ -49,7 +49,7 @@ public class MenuCommandHandler {
     public Dish handle(RemoveIngredient command){
         Dish dish = this.getDishById(command.getId());
 
-        dish.removeIngredient(command.getIngredient());
+        dish.removeIngredient(command.getIngredientid());
         this.dishRepository.save(dish);
 
         return dish;

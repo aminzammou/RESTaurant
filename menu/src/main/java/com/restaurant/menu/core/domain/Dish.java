@@ -49,7 +49,7 @@ public class Dish {
         this.ingredients.add(ingredient);
     }
 
-    public void removeIngredient(Ingredient ingredient){
-        this.ingredients.remove(ingredient);
+    public void removeIngredient(IngredientId ingredientId){
+        ingredients.removeIf(ingredient -> ingredient.getIngredientId() == ingredientId);
     }
 }

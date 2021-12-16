@@ -15,6 +15,7 @@ import com.restaurant.menu.core.application.query.ListDishes;
 import com.restaurant.menu.core.domain.event.ListIngredients;
 import com.restaurant.menu.infrastructure.driver.web.request.CreateDishRequest;
 import com.restaurant.menu.infrastructure.driver.web.request.IngredientRequest;
+import com.restaurant.menu.infrastructure.driver.web.request.RemoveIngredientRequest;
 import com.restaurant.menu.infrastructure.driver.web.request.RenameDishRequest;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,12 +76,12 @@ public class menuController {
 
     @PostMapping("/dish/{id}/ingredient")
     public Dish addIngredient(@PathVariable UUID id, @Valid @RequestBody IngredientRequest request) {
-        return this.commandHandler.handle(new AddIngredient(id, request.ingredient));
+        return this.commandHandler.handle(new AddIngredient(id, new Ingredient(request.id ,request.name, request.amount)));
     }
 
     @DeleteMapping("/dish/{id}/ingredient")
-    public Dish removeIngredient(@PathVariable UUID id, @Valid @RequestBody IngredientRequest request) {
-        return this.commandHandler.handle(new RemoveIngredient(id, request.ingredient)
+    public Dish removeIngredient(@PathVariable UUID id, @Valid @RequestBody RemoveIngredientRequest request) {
+        return this.commandHandler.handle(new RemoveIngredient(id, request.ingredientId)
         );
     }
 }
