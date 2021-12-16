@@ -5,10 +5,7 @@ import com.restaurant.auth.core.application.document.GetUserDocument;
 import com.restaurant.auth.core.application.handler.AuthCommandHandler;
 import com.restaurant.auth.core.application.handler.AuthQueryHandler;
 import com.restaurant.auth.core.application.query.GetUserQuery;
-import com.restaurant.auth.core.domain.exception.IncorrectPassword;
-import com.restaurant.auth.core.domain.exception.InvalidRole;
-import com.restaurant.auth.core.domain.exception.UserAlreadyExists;
-import com.restaurant.auth.core.domain.exception.UserNotFound;
+import com.restaurant.auth.core.domain.exception.*;
 import com.restaurant.auth.infrastructure.ingoing.web.request.*;
 import com.restaurant.auth.infrastructure.ingoing.web.response.GetUserResponse;
 import org.springframework.http.HttpStatus;
@@ -31,49 +28,59 @@ public class AuthController {
         this.commandHandler.handle(new RegisterUserCommand(request.username(), request.password(), request.firstName(), request.lastName(), request.gender()));
     }
 
-    @PatchMapping("/user/password/{username}")
+    @PostMapping("/user/{username}")
+    public String loginUser(@PathVariable String username, @RequestBody LoginUserRequest request) {
+        return this.commandHandler.handle(new LoginUserCommand(username, request.password()));
+    }
+
+    @PatchMapping("/user/password/{token}")
     public void changeUserPassword(@PathVariable String token, @RequestBody ChangeUserPasswordRequest request) {
         this.commandHandler.handle(new ChangeUserPasswordCommand(token, request.oldPassword(), request.newPassword()));
     }
 
-    @PatchMapping("/user/role/{username}")
+    @PatchMapping("/user/role/{token}")
     public void changeUserRole(@PathVariable String token, @RequestBody ChangeUserRoleRequest request) {
         this.commandHandler.handle(new ChangeUserRoleCommand(token, request.username(), request.role()));
     }
 
-    @PatchMapping("/user/info/{username}")
+    @PatchMapping("/user/info/{token}")
     public void changeUserInfo(@PathVariable String token, @RequestBody ChangeUserInfoRequest request) {
         this.commandHandler.handle(new ChangeUserInfoCommand(token, request.firstName(), request.lastName(), request.gender()));
     }
 
-    @DeleteMapping("/user/{username}")
+    @DeleteMapping("/user/{token}")
     public void deleteUser(@PathVariable String token, @RequestBody DeleteUserRequest request) {
         this.commandHandler.handle(new DeleteUserCommand(token, request.password()));
     }
 
-    @GetMapping("/user/{username}")
+    @GetMapping("/user/{token}")
     public GetUserResponse getUser(@PathVariable String token) {
         GetUserDocument document = this.queryHandler.handle(new GetUserQuery(token));
         return new GetUserResponse(document.username(), document.role(), document.firstName(), document.lastName(), document.gender());
     }
 
     @ExceptionHandler
-    public ResponseEntity<Void> handleUserAlreadyExisting(UserAlreadyExists exception) {
+    public ResponseEntity<Void> handleUserAlreadyExistsException(UserAlreadyExists exception) {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
     @ExceptionHandler
-    public ResponseEntity<Void> handleUserNotFound(UserNotFound exception) {
+    public ResponseEntity<Void> handleUserNotFoundException(UserNotFound exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @ExceptionHandler
-    public ResponseEntity<Void> handleIncorrectUserPassword(IncorrectPassword exception) {
+    public ResponseEntity<Void> handleIncorrectUserPasswordException(IncorrectPassword exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @ExceptionHandler
-    public ResponseEntity<Void> handleInvalidUserRole(InvalidRole exception) {
+    public ResponseEntity<Void> handleInvalidUserRoleException(InvalidRole exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Void> handleUnauthorizedException(Unauthorized exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
