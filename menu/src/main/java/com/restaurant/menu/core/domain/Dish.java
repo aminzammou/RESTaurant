@@ -21,7 +21,7 @@ public class Dish {
     private Category category;
     private double price;
     private State state;
-    private List<Ingredient> ingredients;
+    private List<Ingredient> ingredients = new ArrayList<>();
 
     public Dish(String name, Category category, double price, State state, List<Ingredient> ingredients) {
         this.name = name;

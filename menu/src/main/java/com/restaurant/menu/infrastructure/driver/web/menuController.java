@@ -12,6 +12,7 @@ import com.restaurant.menu.core.application.*;
 import com.restaurant.menu.core.domain.DishId;
 import com.restaurant.menu.core.domain.Ingredient;
 import com.restaurant.menu.core.application.query.ListDishes;
+import com.restaurant.menu.core.domain.IngredientId;
 import com.restaurant.menu.core.domain.event.ListIngredients;
 import com.restaurant.menu.infrastructure.driver.web.request.CreateDishRequest;
 import com.restaurant.menu.infrastructure.driver.web.request.IngredientRequest;
@@ -76,7 +77,7 @@ public class menuController {
 
     @PostMapping("/dish/{id}/ingredient")
     public Dish addIngredient(@PathVariable UUID id, @Valid @RequestBody IngredientRequest request) {
-        return this.commandHandler.handle(new AddIngredient(id, new Ingredient(request.id ,request.name, request.amount)));
+        return this.commandHandler.handle(new AddIngredient(id, new Ingredient(new IngredientId(request.id),request.name, request.amount)));
     }
 
     @DeleteMapping("/dish/{id}/ingredient")

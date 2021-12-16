@@ -56,7 +56,7 @@ public class MenuCommandHandler {
     }
 
     private Dish getDishById(UUID id) {
-        return this.dishRepository.findById(id)
+        return this.dishRepository.findByDishId(id)
                 .orElseThrow(() -> new DishNotFound(id.toString()));
     }
 
