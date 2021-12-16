@@ -7,8 +7,8 @@ import com.restaurant.stock.core.application.command.RemoveIngredient;
 import com.restaurant.stock.core.application.query.GetAllStockItems;
 import com.restaurant.stock.core.application.query.GetStockItemByIngredient;
 import com.restaurant.stock.core.domain.StockItem;
-import com.restaurant.stock.infrastructure.driver.web.request.AddIngredientRequest;
-import com.restaurant.stock.infrastructure.driver.web.request.RemoveIngredientRequest;
+import com.restaurant.stock.infrastructure.driver.web.request.AddStockRequest;
+import com.restaurant.stock.infrastructure.driver.web.request.RemoveStockRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,17 +27,17 @@ public class StockController {
     }
 
     @PostMapping("/add-stock")
-    StockItem addIngredient(@Valid @RequestBody AddIngredientRequest request) {
+    StockItem addIngredient(@Valid @RequestBody AddStockRequest request) {
         return this.commandHandler.handle(new AddIngredient(request.getName(), request.getAmount()));
     }
 
     @PostMapping("/remove-stock")
-    StockItem removeIngredient(@Valid @RequestBody RemoveIngredientRequest request) {
+    StockItem removeIngredient(@Valid @RequestBody RemoveStockRequest request) {
         return this.commandHandler.handle(new RemoveIngredient(request.getIngredientId(), request.getAmount()));
     }
 
     @GetMapping
-    List<StockItem> getAll(@RequestParam(required = false) UUID ingredientId) {
+    List<StockItem> getStockItems(@RequestParam(required = false) UUID ingredientId) {
         if(ingredientId == null) {
             return this.queryHandler.handle(new GetAllStockItems());
         }

@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RemoveIngredientRequest {
+public class RemoveStockRequest {
     @NotBlank
     public UUID ingredientId;
     public int amount;

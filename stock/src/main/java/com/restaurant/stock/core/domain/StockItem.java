@@ -1,5 +1,6 @@
 package com.restaurant.stock.core.domain;
 
+import com.restaurant.stock.core.domain.exception.StockLessThenZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,12 @@ public class StockItem {
         this.amount += amount;
     }
 
-    public void decreaseStock(int amount) {
+    public void decreaseStock(int amount) throws StockLessThenZero {
+        if(this.amount - amount < 0) {
+            throw new StockLessThenZero("Stock item amount will be less than zero");
+        }else if(this.amount - amount == 0) {
+            // create StockItemEmpty event
+        }
         this.amount -= amount;
     }
 }
