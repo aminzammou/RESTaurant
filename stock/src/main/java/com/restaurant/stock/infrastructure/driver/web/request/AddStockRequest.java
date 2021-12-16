@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddIngredientRequest {
+public class AddStockRequest {
     @NotBlank
     public String name;
     public int amount;
