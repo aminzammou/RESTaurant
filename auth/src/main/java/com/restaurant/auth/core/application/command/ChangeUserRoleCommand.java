@@ -1,10 +1,3 @@
 package com.restaurant.auth.core.application.command;
 
-public record ChangeUserRoleCommand(String username, String role) {
-    public String getUsername() {
-        return username;
-    }
-    public String getRole() {
-        return role;
-    }
-}
+public record ChangeUserRoleCommand(String token, String username, String role) { }
