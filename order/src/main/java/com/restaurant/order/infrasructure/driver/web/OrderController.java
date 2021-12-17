@@ -4,9 +4,13 @@ import com.restaurant.order.core.application.OrderCommandHandler;
 import com.restaurant.order.core.application.OrderQueryHandler;
 import com.restaurant.order.core.application.command.ChangeOrderStatus;
 import com.restaurant.order.core.application.command.CreateOrder;
+import com.restaurant.order.core.application.command.CreateOrderLine;
 import com.restaurant.order.core.application.query.GetOrderById;
 import com.restaurant.order.core.application.query.ListOrders;
+import com.restaurant.order.core.domain.Dish;
+import com.restaurant.order.core.domain.DishID;
 import com.restaurant.order.core.domain.Order;
+import com.restaurant.order.core.domain.OrderLine;
 import com.restaurant.order.core.ports.storage.OrderRepository;
 import com.restaurant.order.infrasructure.driver.web.request.ChangeOrderStatusRequest;
 import com.restaurant.order.infrasructure.driver.web.request.CreateOrderRequest;
@@ -29,7 +33,10 @@ public class OrderController {
     @PostMapping
     public Order registerOrder(@Valid @RequestBody CreateOrderRequest request) {
         return this.commandHandler.handle(
-                new CreateOrder(request.customerNote)
+                new CreateOrder(
+                        request.client.name, request.client.email, request.note,
+                        request.orderLines.stream().map((orderLineRequest -> new CreateOrderLine(orderLineRequest.id, orderLineRequest.amount))).toList()
+                )
         );
     }
 

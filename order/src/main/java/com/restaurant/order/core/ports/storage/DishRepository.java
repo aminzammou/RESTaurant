@@ -9,6 +9,5 @@ import java.util.UUID;
 
 public interface DishRepository {
     List<Dish> findAll();
-//    @Query("{'_id._id': ?0 }")
     Optional<Dish> findbyId(UUID uuid);
 }

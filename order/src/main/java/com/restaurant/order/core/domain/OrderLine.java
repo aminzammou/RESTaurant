@@ -1,13 +1,13 @@
 package com.restaurant.order.core.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class OrderLine {
-    private Item item;
+    private int amount;
+    private Dish dish;
     private Double totalPrice;
 
     public OrderLine(Dish dish, int amount) {
