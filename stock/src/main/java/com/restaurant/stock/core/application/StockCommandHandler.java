@@ -5,6 +5,7 @@ import com.restaurant.stock.core.application.command.RemoveIngredient;
 import com.restaurant.stock.core.domain.Ingredient;
 import com.restaurant.stock.core.domain.StockItem;
 import com.restaurant.stock.core.domain.exception.StockItemNotFound;
+import com.restaurant.stock.core.domain.exception.StockLessThenZero;
 import com.restaurant.stock.core.port.storage.IngredientRepository;
 import com.restaurant.stock.core.port.storage.StockItemRepository;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class StockCommandHandler {
         return increaseStock(command, ingredient);
     }
 
-    public StockItem handle(RemoveIngredient command) {
+    public StockItem handle(RemoveIngredient command) throws StockLessThenZero {
         Optional<StockItem> foundStockItem = this.getStockItemByIngredient(command.getIngredientId());
         if(foundStockItem.isPresent()) {
             StockItem stockItem = foundStockItem.get();
