@@ -7,6 +7,7 @@
       <excludeFolder url="file://$MODULE_DIR$/rabbitmq/volume/data/mnesia/rabbit@4ac7e0eecf72-plugins-expand" />
       <excludeFolder url="file://$MODULE_DIR$/rabbitmq/volume/data/mnesia/rabbit@b33cb9b0ed23-plugins-expand" />
       <excludeFolder url="file://$MODULE_DIR$/mongodb" />
+      <excludeFolder url="file://$MODULE_DIR$/rabbitmq" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
