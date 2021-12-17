@@ -13,13 +13,17 @@ services:
   # https://hub.docker.com/_/mongo
   mongodb:
     image: mongo:latest
+    container_name: mongo
+    restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: stock
     ports:
       - "27017:27017"
     volumes:
       - ./mongodb/volume/data/:/data/db/
+
 #  authentication_app:
 #    image: authentication
 #    ports:
@@ -36,7 +40,12 @@ services:
       - 8083:8080
 
 #
-#  stock_app:
-#    image: stock_app
-#    ports:
-#      - 8084:8080
+  stock_app:
+    build:
+      context: ../stock
+      dockerfile: ../stock/Dockerfile
+    ports:
+      - 8084:8080
+    depends_on:
+      - mongodb
+      - rabbitmq
