@@ -2,7 +2,6 @@ package com.restaurant.menu.core.application.command;
 
 import com.restaurant.menu.core.domain.Category;
 import com.restaurant.menu.core.domain.Ingredient;
-import com.restaurant.menu.core.domain.IngredientId;
 import com.restaurant.menu.core.domain.State;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

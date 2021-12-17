@@ -50,12 +50,12 @@ public class Dish {
         this.ingredients.add(ingredient);
     }
 
-    public void removeIngredient(IngredientId ingredientId){
+    public void removeIngredient(UUID ingredientId){
 //        for(Ingredient ingredient: ingredients){
 //            if (ingredient.getIngredientId().getId() == ingredientId.getId()){
 //                ingredients.remove(ingredient);
 //            }
 //        }
-        ingredients.removeIf(ingredient -> ingredient.getIngredientId().getId().equals(ingredientId.getId()));
+        ingredients.removeIf(ingredient -> ingredient.getIngredientId().equals(ingredientId));
     }
 }

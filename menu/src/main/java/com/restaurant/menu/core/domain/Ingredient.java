@@ -7,15 +7,23 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Document
 public class Ingredient {
     @Id
-    private IngredientId ingredientId;
-    private String name;
+    private UUID ingredientId;
     private int amount;
+
+    public Ingredient(Ingredient ingredient, int amount) {
+        this.ingredientId = ingredient.ingredientId;
+        this.amount = amount;
+    }
+
+    public Ingredient(UUID ingredientId) {
+        this.ingredientId = ingredientId;
+    }
 }
