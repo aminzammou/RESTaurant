@@ -12,15 +12,18 @@ import com.restaurant.order.core.ports.storage.DishRepository;
 import com.restaurant.order.core.ports.storage.OrderRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class OrderCommandHandler {
-    private final OrderRepository repository;
+    private final OrderRepository orderRepository;
+    private final DishRepository dishRepository;
+    private final OrderEventPublisher eventPublisher;
 
-    public OrderCommandHandler(OrderRepository repository) {
-        this.repository = repository;
+    public OrderCommandHandler(OrderRepository orderRepository, DishRepository dishRepository, OrderEventPublisher eventPublisher) {
+        this.orderRepository = orderRepository;
+        this.dishRepository = dishRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public Order handle(CreateOrder command) {
@@ -50,7 +53,7 @@ public class OrderCommandHandler {
     }
 
     private Order getOrderById(UUID id) {
-        return this.repository.findByOrderId(id)
+        return this.orderRepository.findByOrderId(id)
                 .orElseThrow(() -> new OrderNotFound(id.toString()));
     }
 
@@ -64,9 +67,9 @@ public class OrderCommandHandler {
 //    }
 
     private void publishEventsAndSave(Order order) {
-//        List<JobEvent> events = job.listEvents();
-//        events.forEach(eventPublisher::publish);
-//        job.clearEvents();
-        this.repository.save(order);
+        List<OrderEvent> events = order.listEvents();
+        events.forEach(eventPublisher::publish);
+        order.clearEvents();
+        this.orderRepository.save(order);
     }
 }

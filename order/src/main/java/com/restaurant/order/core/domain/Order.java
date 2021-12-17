@@ -20,6 +20,8 @@ public class Order {
     @Id
     private OrderID id;
 
+    private String name;
+    private String email;
     private LocalDate orderDateTime;
     private List<OrderLine> orderLines;
     private Double totalPrice;
