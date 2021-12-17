@@ -2,9 +2,13 @@ package com.restaurant.order.core.application;
 
 import com.restaurant.order.core.application.command.ChangeOrderStatus;
 import com.restaurant.order.core.application.command.CreateOrder;
-import com.restaurant.order.core.application.command.RemoveOrder;
+import com.restaurant.order.core.application.command.CreateOrderLine;
 import com.restaurant.order.core.domain.Order;
+import com.restaurant.order.core.domain.OrderLine;
+import com.restaurant.order.core.domain.event.OrderEvent;
 import com.restaurant.order.core.domain.exception.OrderNotFound;
+import com.restaurant.order.core.ports.messaging.OrderEventPublisher;
+import com.restaurant.order.core.ports.storage.DishRepository;
 import com.restaurant.order.core.ports.storage.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +24,16 @@ public class OrderCommandHandler {
     }
 
     public Order handle(CreateOrder command) {
-        Order order = new Order(command.getCustomerNote());
+
+        List<OrderLine> orderLines = new ArrayList<>();
+        for (CreateOrderLine orderline: command.orderLineList()) {
+            OrderLine orderLine2 = new OrderLine(dishRepository.findbyId(orderline.getDishId()).orElseThrow(() -> new OrderNotFound(orderline.getDishId().toString()))
+                    ,orderline.getAmount());
+            orderLines.add(orderLine2);
+        }
+
+
+        Order order = new Order(command.name(), command.email(), command.note(), orderLines);
 
         this.publishEventsAndSave(order);
 

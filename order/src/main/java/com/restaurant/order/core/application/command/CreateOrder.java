@@ -6,13 +6,7 @@ import lombok.Getter;
 import java.util.Date;
 import java.util.List;
 
-@Getter
-public class CreateOrder {
-//    private final List<Item> items;
-    private final String customerNote;
-
-    public CreateOrder(String customerNote) {
-//        this.items = items;
-        this.customerNote = customerNote;
-    }
-}
+public record CreateOrder (
+        String name, String email, String note,
+    List<CreateOrderLine> orderLineList
+) {}
