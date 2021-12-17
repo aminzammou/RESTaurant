@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class IngredientRequest {
     @NotBlank
-    public UUID id;
+    public IngredientIdRequest id;
     @NotBlank
     public String name;
     @NotBlank

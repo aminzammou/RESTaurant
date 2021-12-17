@@ -6,5 +6,5 @@ import javax.validation.constraints.NotBlank;
 
 public class RemoveIngredientRequest {
     @NotBlank
-    public IngredientId ingredientId;
+    public IngredientId id;
 }

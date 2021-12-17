@@ -24,6 +24,7 @@ public class Dish {
     private List<Ingredient> ingredients = new ArrayList<>();
 
     public Dish(String name, Category category, double price, State state, List<Ingredient> ingredients) {
+        this.dishId = new DishId(UUID.randomUUID());
         this.name = name;
         this.category = category;
         this.price = price;
@@ -50,6 +51,11 @@ public class Dish {
     }
 
     public void removeIngredient(IngredientId ingredientId){
-        ingredients.removeIf(ingredient -> ingredient.getIngredientId() == ingredientId);
+//        for(Ingredient ingredient: ingredients){
+//            if (ingredient.getIngredientId().getId() == ingredientId.getId()){
+//                ingredients.remove(ingredient);
+//            }
+//        }
+        ingredients.removeIf(ingredient -> ingredient.getIngredientId().getId().equals(ingredientId.getId()));
     }
 }

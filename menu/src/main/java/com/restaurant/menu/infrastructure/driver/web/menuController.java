@@ -1,10 +1,7 @@
 package com.restaurant.menu.infrastructure.driver.web;
 
 
-import com.restaurant.menu.core.application.command.AddIngredient;
-import com.restaurant.menu.core.application.command.CreateDish;
-import com.restaurant.menu.core.application.command.RemoveIngredient;
-import com.restaurant.menu.core.application.command.RenameDish;
+import com.restaurant.menu.core.application.command.*;
 import com.restaurant.menu.core.application.query.GetDishById;
 import com.restaurant.menu.core.application.query.GetDisheshByOrder;
 import com.restaurant.menu.core.domain.Dish;
@@ -73,16 +70,19 @@ public class menuController {
         return this.commandHandler.handle(new RenameDish(id, request.name));
     }
 
-
+    @DeleteMapping("/dish/{id}")
+    public Dish removeDish(@PathVariable UUID id) {
+        return this.commandHandler.handle(new RemoveDish(id));
+    }
 
     @PostMapping("/dish/{id}/ingredient")
     public Dish addIngredient(@PathVariable UUID id, @Valid @RequestBody IngredientRequest request) {
-        return this.commandHandler.handle(new AddIngredient(id, new Ingredient(new IngredientId(request.id),request.name, request.amount)));
+        return this.commandHandler.handle(new AddIngredient(id, new Ingredient(new IngredientId(UUID.fromString(request.id.getId())), request.name, request.amount)));
     }
 
-    @DeleteMapping("/dish/{id}/ingredient")
-    public Dish removeIngredient(@PathVariable UUID id, @Valid @RequestBody RemoveIngredientRequest request) {
-        return this.commandHandler.handle(new RemoveIngredient(id, request.ingredientId)
+    @DeleteMapping("/dish/{id}/ingredient/{ingredientId}")
+    public Dish removeIngredient(@PathVariable UUID id, @PathVariable UUID ingredientId) {
+        return this.commandHandler.handle(new RemoveIngredient(id, new IngredientId(ingredientId))
         );
     }
 }

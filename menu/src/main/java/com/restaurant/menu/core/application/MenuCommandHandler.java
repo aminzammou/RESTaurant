@@ -1,9 +1,6 @@
 package com.restaurant.menu.core.application;
 
-import com.restaurant.menu.core.application.command.AddIngredient;
-import com.restaurant.menu.core.application.command.CreateDish;
-import com.restaurant.menu.core.application.command.RemoveIngredient;
-import com.restaurant.menu.core.application.command.RenameDish;
+import com.restaurant.menu.core.application.command.*;
 import com.restaurant.menu.core.domain.Dish;
 import com.restaurant.menu.core.domain.exception.DishNotFound;
 import com.restaurant.menu.core.port.storage.DishRepository;
@@ -55,10 +52,17 @@ public class MenuCommandHandler {
         return dish;
     }
 
+    public Dish handle(RemoveDish command) {
+        Dish dish = this.getDishById(command.getId());
+
+        this.dishRepository.delete(dish);
+
+        return dish;
+    }
+
     private Dish getDishById(UUID id) {
         return this.dishRepository.findByDishId(id)
                 .orElseThrow(() -> new DishNotFound(id.toString()));
     }
-
 
 }

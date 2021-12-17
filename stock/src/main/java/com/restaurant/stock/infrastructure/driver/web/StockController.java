@@ -7,6 +7,7 @@ import com.restaurant.stock.core.application.command.RemoveIngredient;
 import com.restaurant.stock.core.application.query.GetAllStockItems;
 import com.restaurant.stock.core.application.query.GetStockItemByIngredient;
 import com.restaurant.stock.core.domain.StockItem;
+import com.restaurant.stock.core.domain.exception.StockLessThenZero;
 import com.restaurant.stock.infrastructure.driver.web.request.AddStockRequest;
 import com.restaurant.stock.infrastructure.driver.web.request.RemoveStockRequest;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class StockController {
     }
 
     @PostMapping("/remove-stock")
-    StockItem removeIngredient(@Valid @RequestBody RemoveStockRequest request) {
+    StockItem removeIngredient(@Valid @RequestBody RemoveStockRequest request) throws StockLessThenZero {
         return this.commandHandler.handle(new RemoveIngredient(request.getIngredientId(), request.getAmount()));
     }
 
