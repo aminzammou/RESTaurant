@@ -6,9 +6,15 @@ import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
 
+//@Value
 public class CreateOrderRequest {
 //    @NotBlank
 //    public List<Item> items;
     @NotBlank
-    public String customerNote;
+    public String note;
+    public List<OrderLineRequest> orderLines;
+    public OrderClientRequest client;
+
+    public CreateOrderRequest() {
+    }
 }

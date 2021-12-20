@@ -20,12 +20,11 @@ services:
       - "27017:27017"
     volumes:
       - ./mongodb/volume/data/:/data/db/
-  authentication_app:
-    build:
-      context: ../authentication
-      dockerfile: ../authentication/Dockerfile
-    ports:
-      - 8081:8080
+
+#  authentication_app:
+#    image: authentication
+#    ports:
+#      - 8081:8080
 
   menu_app:
     image: menu_app
@@ -44,3 +43,6 @@ services:
       dockerfile: ../stock/Dockerfile
     ports:
       - 8084:8080
+    depends_on:
+      - mongodb
+      - rabbitmq

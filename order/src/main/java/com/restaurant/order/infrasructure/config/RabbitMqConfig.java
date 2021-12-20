@@ -1,6 +1,7 @@
-package com.restaurant.stock.infrastructure.config;
+package com.restaurant.order.infrasructure.config;
 
-import com.restaurant.stock.infrastructure.driven.messaging.RabbitMqEventPublisher;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restaurant.order.infrasructure.driven.messaging.RabbitMqEventPublisher;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 public class RabbitMqConfig {
@@ -23,11 +23,11 @@ public class RabbitMqConfig {
     @Value("${messaging.exchange.restaurant}")
     private String restaurantExchangeName;
 
-    @Value("${messaging.queue.menu}")
-    private String menuQueueName;
+    @Value("${messaging.queue.order}")
+    private String orderQueueName;
 
-    @Value("${messaging.routing-key.menu}")
-    private String menuRoutingKey;
+    @Value("${messaging.routing-key.order}")
+    private String orderRoutingKey;
 
     @Bean
     public TopicExchange restaurantExchange() {
@@ -35,16 +35,17 @@ public class RabbitMqConfig {
     }
 
     @Bean
-    public Queue menuQueue() {
-        return QueueBuilder.durable(menuQueueName).build();
+    public Queue orderQueue() {
+        // Creates a new queue in RabbitMQ
+        return QueueBuilder.durable(orderQueueName).build();
     }
 
     @Bean
-    public Binding menuKeywordsBinding() {
+    public Binding orderBinding() {
         return BindingBuilder
-                .bind(menuQueue())
+                .bind(orderQueue())
                 .to(restaurantExchange())
-                .with(menuRoutingKey);
+                .with(orderRoutingKey);
     }
 
     @Bean
@@ -82,4 +83,5 @@ public class RabbitMqConfig {
     public ConnectionFactory connectionFactory() {
         return new CachingConnectionFactory(host, port);
     }
+
 }
