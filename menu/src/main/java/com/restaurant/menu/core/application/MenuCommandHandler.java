@@ -9,6 +9,7 @@ import com.restaurant.menu.core.port.storage.DishRepository;
 import com.restaurant.menu.core.port.storage.IngredientRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -65,9 +66,24 @@ public class MenuCommandHandler {
         return dish;
     }
 
+    public List<Dish> handle(ChangeDishStatus command) {
+        List<Dish> dishes = this.getDishByIngredientId(command.getIngredientId());
+
+        for (Dish dish: dishes){
+            dish.checkForIngredients(command.getIngredientId(), command.getAmount());
+        }
+        this.dishRepository.saveAll(dishes);
+
+        return dishes;
+    }
+
+    private List<Dish> getDishByIngredientId(UUID id) {
+        return this.dishRepository.findByIngredientId(id);
+//                .orElseThrow(() -> new DishNotFound(id.toString()));
+    }
+
     private Dish getDishById(UUID id) {
         return this.dishRepository.findByDishId(id)
                 .orElseThrow(() -> new DishNotFound(id.toString()));
     }
-
 }

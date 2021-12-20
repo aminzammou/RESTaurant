@@ -34,12 +34,13 @@ public class Dish {
 
 
 
-    public boolean checkForIngredients(ArrayList<Ingredient> ingredients){
-        for(Ingredient ingredient: ingredients){
-
-            return false;
+    public void checkForIngredients(UUID ingredientId,int amount){
+        Ingredient ingredient = ingredients.get(ingredients.indexOf(ingredientId));
+        if (ingredient.getAmount()>amount){
+            this.state = State.Available;
+        }else {
+            this.state = State.NotAvailable;
         }
-        return true;
     }
 
     public void rename(String name) {

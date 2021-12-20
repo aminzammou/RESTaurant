@@ -50,6 +50,11 @@ public class menuController {
         return this.queryHandler.handle(new GetDisheshByOrder(listId));
     }
 
+    @GetMapping("/dish/ingredient/{ingredientId}")
+    public List<Dish> findDishesByIngredient(@PathVariable UUID ingredientId, @RequestBody int amount) {
+        return this.commandHandler.handle(new ChangeDishStatus(ingredientId, amount));
+    }
+
     @GetMapping("/ingredients")
     public List<Ingredient> findIngredients(
             @RequestParam(required = false) String orderBy,
