@@ -19,4 +19,5 @@ public class HttpClientConfig {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
-    }}
+    }
+}

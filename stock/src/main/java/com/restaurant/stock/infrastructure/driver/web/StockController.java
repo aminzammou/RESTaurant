@@ -43,7 +43,7 @@ public class StockController {
     }
 
     @GetMapping("/{ingredientId}")
-    StockItem getStockItemByIngredient(@PathVariable() UUID ingredientId) {
+    StockItem getStockItemByIngredient(@PathVariable UUID ingredientId) {
         return this.queryHandler.handle(new GetStockItemByIngredient(ingredientId));
     }
 }

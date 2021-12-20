@@ -10,10 +10,7 @@ import com.restaurant.menu.core.domain.DishId;
 import com.restaurant.menu.core.domain.Ingredient;
 import com.restaurant.menu.core.application.query.ListDishes;
 import com.restaurant.menu.core.domain.event.ListIngredients;
-import com.restaurant.menu.infrastructure.driver.web.request.CreateDishRequest;
-import com.restaurant.menu.infrastructure.driver.web.request.IngredientRequest;
-import com.restaurant.menu.infrastructure.driver.web.request.RemoveIngredientRequest;
-import com.restaurant.menu.infrastructure.driver.web.request.RenameDishRequest;
+import com.restaurant.menu.infrastructure.driver.web.request.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -51,8 +48,9 @@ public class menuController {
     }
 
     @GetMapping("/dish/ingredient/{ingredientId}")
-    public List<Dish> findDishesByIngredient(@PathVariable UUID ingredientId, @RequestBody int amount) {
-        return this.commandHandler.handle(new ChangeDishStatus(ingredientId, amount));
+    public List<Dish> findDishesByIngredient(@PathVariable UUID ingredientId, @RequestBody ingredientTest amount) {
+
+        return this.commandHandler.handle(new ChangeDishStatus(ingredientId, amount.amount));
     }
 
     @GetMapping("/ingredients")

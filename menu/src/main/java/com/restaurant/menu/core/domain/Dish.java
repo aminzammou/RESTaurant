@@ -35,8 +35,8 @@ public class Dish {
 
 
     public void checkForIngredients(UUID ingredientId,int amount){
-        Ingredient ingredient = ingredients.get(ingredients.indexOf(ingredientId));
-        if (ingredient.getAmount()>amount){
+        Ingredient ingredient = ingredients.get(ingredients.indexOf(ingredientId)+1);
+        if (ingredient.getAmount()<amount){
             this.state = State.Available;
         }else {
             this.state = State.NotAvailable;

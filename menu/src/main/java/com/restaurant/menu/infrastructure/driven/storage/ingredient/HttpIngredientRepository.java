@@ -25,7 +25,7 @@ public class HttpIngredientRepository implements IngredientRepository {
 
     @Override
     public Optional<Ingredient> findById(UUID id) {
-        URI uri = URI.create(this.rootPath + "/stock?ingredientId=" + id);
+        URI uri = URI.create(this.rootPath + "/stock/" + id);
 
         IngredientResult results = this.client.getForObject(uri, IngredientResult.class);
 

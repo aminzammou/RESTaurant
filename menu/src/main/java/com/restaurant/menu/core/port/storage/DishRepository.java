@@ -16,7 +16,7 @@ public interface DishRepository extends MongoRepository<Dish, UUID> {
 //    @Query("{'_id._id': ?0 }")
 //    List<Dish> findByIngredientId(UUID id);
 
-    @Query("{ingredient: ?0}")
+    @Query("{'ingredients._id': ?0}")
     List<Dish> findByIngredientId(UUID ingredientId);
 
 }
