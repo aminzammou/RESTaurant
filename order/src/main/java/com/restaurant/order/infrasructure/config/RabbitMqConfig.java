@@ -29,15 +29,34 @@ public class RabbitMqConfig {
     @Value("${messaging.routing-key.order}")
     private String orderRoutingKey;
 
+    @Value("${messaging.exchange.deadletter}")
+    private String deadLetterExchangeName;
+
+    @Value("${messaging.queue.deadletter}")
+    private String deadletterQueueName;
+
+    @Value("${messaging.routing-key.deadletter}")
+    private String deadLetterRoutingKey;
+
     @Bean
     public TopicExchange restaurantExchange() {
         return new TopicExchange(restaurantExchangeName);
     }
 
     @Bean
+    public DirectExchange deadLetterExchange() {
+        return new DirectExchange(deadLetterExchangeName);
+    }
+
+    @Bean
+    public Queue dlQueue() {
+        return QueueBuilder.durable(deadletterQueueName).build();
+    }
+
+    @Bean
     public Queue orderQueue() {
         // Creates a new queue in RabbitMQ
-        return QueueBuilder.durable(orderQueueName).build();
+        return QueueBuilder.durable(orderQueueName).withArgument("x-dead-letter-exchange", deadLetterExchangeName).withArgument("x-dead-letter-routing-key", deadLetterRoutingKey).build();
     }
 
     @Bean
@@ -46,6 +65,11 @@ public class RabbitMqConfig {
                 .bind(orderQueue())
                 .to(restaurantExchange())
                 .with(orderRoutingKey);
+    }
+
+    @Bean
+    Binding DLQbinding() {
+        return BindingBuilder.bind(dlQueue()).to(deadLetterExchange()).with(deadLetterRoutingKey);
     }
 
     @Bean

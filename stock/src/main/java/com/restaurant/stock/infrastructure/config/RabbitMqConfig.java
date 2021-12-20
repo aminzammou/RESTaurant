@@ -35,6 +35,9 @@ public class RabbitMqConfig {
     @Value("${messaging.queue.deadletter}")
     private String deadletterQueueName;
 
+    @Value("${messaging.routing-key.deadletter}")
+    private String deadLetterRoutingKey;
+
     @Bean
     public TopicExchange restaurantExchange() {
         return new TopicExchange(restaurantExchangeName);
@@ -52,12 +55,12 @@ public class RabbitMqConfig {
 
     @Bean
     public Queue orderQueue() {
-        return QueueBuilder.durable(orderQueueName).withArgument("x-dead-letter-exchange", deadLetterExchangeName).build();
+        return QueueBuilder.durable(orderQueueName).withArgument("x-dead-letter-exchange", deadLetterExchangeName).withArgument("x-dead-letter-routing-key", deadLetterRoutingKey).build();
     }
 
     @Bean
     Binding DLQbinding() {
-        return BindingBuilder.bind(dlQueue()).to(deadLetterExchange()).with(deadletterQueueName);
+        return BindingBuilder.bind(dlQueue()).to(deadLetterExchange()).with(deadLetterRoutingKey);
     }
 
     @Bean
