@@ -29,6 +29,15 @@ public class RabbitMqConfig {
     @Value("${messaging.routing-key.order}")
     private String orderRoutingKey;
 
+    @Value("${messaging.routing-key.being-prepared.order}")
+    private String orderBeingPreparedRoutingKey;
+
+    @Value("${messaging.routing-key.delivered.order}")
+    private String orderDeliveredRoutingKey;
+
+    @Value("${messaging.routing-key.canceled.order}")
+    private String orderCanceledRoutingKey;
+
     @Bean
     public TopicExchange restaurantExchange() {
         return new TopicExchange(restaurantExchangeName);
