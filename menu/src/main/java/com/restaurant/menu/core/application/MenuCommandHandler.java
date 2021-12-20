@@ -1,9 +1,6 @@
 package com.restaurant.menu.core.application;
 
-import com.restaurant.menu.core.application.command.AddIngredient;
-import com.restaurant.menu.core.application.command.CreateDish;
-import com.restaurant.menu.core.application.command.RemoveIngredient;
-import com.restaurant.menu.core.application.command.RenameDish;
+import com.restaurant.menu.core.application.command.*;
 import com.restaurant.menu.core.domain.Dish;
 import com.restaurant.menu.core.domain.exception.DishNotFound;
 import com.restaurant.menu.core.port.storage.DishRepository;
@@ -21,7 +18,7 @@ public class MenuCommandHandler {
     }
 
     public Dish handle(CreateDish command) {
-        Dish dish = new Dish(command.getName(), command.getCategory(), command.getPrice(), command.getIngredientList());
+        Dish dish = new Dish(command.getName(), command.getCategory(), command.getPrice(), command.getState(), command.getIngredientList());
 
         this.dishRepository.save(dish);
 
@@ -49,16 +46,23 @@ public class MenuCommandHandler {
     public Dish handle(RemoveIngredient command){
         Dish dish = this.getDishById(command.getId());
 
-        dish.removeIngredient(command.getIngredient());
+        dish.removeIngredient(command.getIngredientid());
         this.dishRepository.save(dish);
 
         return dish;
     }
 
-    private Dish getDishById(UUID id) {
-        return this.dishRepository.findById(id)
-                .orElseThrow(() -> new DishNotFound(id.toString()));
+    public Dish handle(RemoveDish command) {
+        Dish dish = this.getDishById(command.getId());
+
+        this.dishRepository.delete(dish);
+
+        return dish;
     }
 
+    private Dish getDishById(UUID id) {
+        return this.dishRepository.findByDishId(id)
+                .orElseThrow(() -> new DishNotFound(id.toString()));
+    }
 
 }

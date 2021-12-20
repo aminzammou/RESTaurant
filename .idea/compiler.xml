@@ -16,7 +16,7 @@
     <bytecodeTargetLevel>
       <module name="auth" target="17" />
       <module name="authentication" target="17" />
-      <module name="menu" target="16" />
+      <module name="menu" target="17" />
       <module name="order" target="17" />
       <module name="stock" target="17" />
     </bytecodeTargetLevel>
