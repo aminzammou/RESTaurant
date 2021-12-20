@@ -2,13 +2,11 @@
 **Continuous Delivering the most fresh Micro-Services in town**
 ---
 
-## Responsibility for each micro Service
-- Order             > Amin + Youri  
-- Stock             > Richard  
-- Menu              > Daan  
-- Authentication    > Hugo  
-  
-- Overall support crossing micro service > Youri  
+## Responsibility for each microservice
+- Order > Amin + Youri
+- Stock > Richard
+- Menu  > Daan
+- Auth  > Hugo
 
 ## Development
 With the following commands the development setup can be ran.  

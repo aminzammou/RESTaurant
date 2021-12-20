@@ -15,7 +15,7 @@ public class DishResult {
     private String name;
     private Double price;
     private String category;
-    private String ingredients;
+//    private String ingredients;
 
 //    public String getDishId() {
 //        return "d604693a-340e-4e7e-b6ea-862d57a8f3c4";
