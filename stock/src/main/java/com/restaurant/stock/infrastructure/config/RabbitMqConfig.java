@@ -23,11 +23,17 @@ public class RabbitMqConfig {
     @Value("${messaging.exchange.restaurant}")
     private String restaurantExchangeName;
 
-    @Value("${messaging.queue.menu}")
-    private String menuQueueName;
+    @Value("${messaging.queue.order}")
+    private String orderQueueName;
 
-    @Value("${messaging.routing-key.menu}")
-    private String menuRoutingKey;
+    @Value("${messaging.routing-key.order}")
+    private String orderRoutingKey;
+
+    @Value("${messaging.exchange.deadletter}")
+    private String deadLetterExchangeName;
+
+    @Value("${messaging.queue.deadletter}")
+    private String deadletterQueueName;
 
     @Bean
     public TopicExchange restaurantExchange() {
@@ -35,16 +41,31 @@ public class RabbitMqConfig {
     }
 
     @Bean
-    public Queue menuQueue() {
-        return QueueBuilder.durable(menuQueueName).build();
+    public DirectExchange deadLetterExchange() {
+        return new DirectExchange(deadLetterExchangeName);
     }
 
     @Bean
-    public Binding menuKeywordsBinding() {
+    public Queue dlQueue() {
+        return QueueBuilder.durable(deadletterQueueName).build();
+    }
+
+    @Bean
+    public Queue orderQueue() {
+        return QueueBuilder.durable(orderQueueName).withArgument("x-dead-letter-exchange", deadLetterExchangeName).build();
+    }
+
+    @Bean
+    Binding DLQbinding() {
+        return BindingBuilder.bind(dlQueue()).to(deadLetterExchange()).with(deadletterQueueName);
+    }
+
+    @Bean
+    public Binding orderKeywordsBinding() {
         return BindingBuilder
-                .bind(menuQueue())
+                .bind(orderQueue())
                 .to(restaurantExchange())
-                .with(menuRoutingKey);
+                .with(orderRoutingKey);
     }
 
     @Bean

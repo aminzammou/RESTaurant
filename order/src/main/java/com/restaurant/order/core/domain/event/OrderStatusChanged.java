@@ -1,9 +1,11 @@
 package com.restaurant.order.core.domain.event;
 
 import com.restaurant.order.core.domain.OrderLine;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 public class OrderStatusChanged extends OrderEvent {
     private final List<OrderLine> orders;
     private final String status;
@@ -15,6 +17,6 @@ public class OrderStatusChanged extends OrderEvent {
 
     @Override
     public String getEventKey() {
-        return null;
+        return "order.status-changed";
     }
 }
