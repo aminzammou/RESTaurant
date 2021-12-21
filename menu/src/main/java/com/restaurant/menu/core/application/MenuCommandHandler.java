@@ -29,11 +29,14 @@ public class MenuCommandHandler {
         Dish dish = new Dish(command.getName(), command.getCategory(), command.getPrice(), command.getState(), command.getIngredientList());
 
         List<ChangeDishStatus> ingredients = new ArrayList<>();
-        for (Ingredient ingredient: dish.getIngredients()) {
-            Ingredient ingredientFromRepository = ingredientRepository.findById(ingredient.getIngredientId()).orElseThrow(() -> new IngredientNotFound(ingredient.getIngredientId().toString()));
-            ingredients.add(new ChangeDishStatus(ingredientFromRepository.getIngredientId(),ingredientFromRepository.getAmount()));
+        if(dish.getIngredients() != null) {
+            for (Ingredient ingredient : dish.getIngredients()) {
+                Ingredient ingredientFromRepository = ingredientRepository.findById(ingredient.getIngredientId()).orElseThrow(() -> new IngredientNotFound(ingredient.getIngredientId().toString()));
+                ingredients.add(new ChangeDishStatus(ingredientFromRepository.getIngredientId(), ingredientFromRepository.getAmount()));
+            }
+            dish.setMaxAmount(ingredients);
         }
-        dish.setMaxAmount(ingredients);
+
         this.dishRepository.save(dish);
 
         return dish;

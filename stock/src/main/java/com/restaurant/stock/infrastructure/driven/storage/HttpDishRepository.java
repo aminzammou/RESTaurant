@@ -29,6 +29,6 @@ public class HttpDishRepository implements DishRepository {
         }
         DishID dishId = new DishID(UUID.fromString(results.getDishId().getId()));
 
-        return Optional.of(new Dish(dishId, results.getIngredients().stream().map(resultIngredient -> new DishIngredient(resultIngredient.getIngredientId().getId(), resultIngredient.getAmount())).collect(Collectors.toList())));
+        return Optional.of(new Dish(dishId, results.getIngredients().stream().map(resultIngredient -> new DishIngredient(resultIngredient.getIngredientId(), resultIngredient.getAmount())).collect(Collectors.toList())));
     }
 }
