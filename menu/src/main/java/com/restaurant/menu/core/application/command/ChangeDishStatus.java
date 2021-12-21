@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
-public class RemoveIngredient {
-    private final UUID id;
-    private final UUID ingredientId;
+public class ChangeDishStatus {
+    private UUID ingredientId;
+    private int amount;
 }

@@ -54,7 +54,7 @@ public class MenuQueryHandler {
 
     public List<Ingredient> handle(ListIngredients query){
         Sort sort = createSort(query.getOrderBy(), query.getDirection());
-        return this.ingredientRepository.findAll(sort);
+        return this.ingredientRepository.findAll();
     }
 
     private Sort createSort(String orderBy, String direction) {

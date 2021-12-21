@@ -1,9 +1,11 @@
 package com.restaurant.order.core.domain.event;
 
 import com.restaurant.order.core.domain.OrderLine;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 public class OrderStatusBeingPrepared extends OrderEvent {
     private final List<OrderLine> orders;
     private final String status;

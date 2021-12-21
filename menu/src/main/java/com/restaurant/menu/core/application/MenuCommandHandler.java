@@ -2,24 +2,38 @@ package com.restaurant.menu.core.application;
 
 import com.restaurant.menu.core.application.command.*;
 import com.restaurant.menu.core.domain.Dish;
+import com.restaurant.menu.core.domain.Ingredient;
 import com.restaurant.menu.core.domain.exception.DishNotFound;
+import com.restaurant.menu.core.domain.exception.IngredientNotFound;
 import com.restaurant.menu.core.port.storage.DishRepository;
+import com.restaurant.menu.core.port.storage.IngredientRepository;
+import com.restaurant.menu.infrastructure.driver.web.request.ingredientTest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class MenuCommandHandler {
     private final DishRepository dishRepository;
+    private final IngredientRepository ingredientRepository;
 
-    public MenuCommandHandler(DishRepository dishRepository) {
+    public MenuCommandHandler(DishRepository dishRepository, IngredientRepository ingredientRepository) {
         this.dishRepository = dishRepository;
+        this.ingredientRepository = ingredientRepository;
     }
 
     public Dish handle(CreateDish command) {
         Dish dish = new Dish(command.getName(), command.getCategory(), command.getPrice(), command.getState(), command.getIngredientList());
 
+        List<ChangeDishStatus> ingredients = new ArrayList<>();
+        for (Ingredient ingredient: dish.getIngredients()) {
+            Ingredient ingredientFromRepository = ingredientRepository.findById(ingredient.getIngredientId()).orElseThrow(() -> new IngredientNotFound(ingredient.getIngredientId().toString()));
+            ingredients.add(new ChangeDishStatus(ingredientFromRepository.getIngredientId(),ingredientFromRepository.getAmount()));
+        }
+        dish.setMaxAmount(ingredients);
         this.dishRepository.save(dish);
 
         return dish;
@@ -37,7 +51,8 @@ public class MenuCommandHandler {
     public Dish handle(AddIngredient command){
         Dish dish = this.getDishById(command.getId());
 
-        dish.addIngredient(command.getIngredient());
+        Ingredient ingredient = new Ingredient(ingredientRepository.findById(command.getIngredient().getIngredientId()).orElseThrow(() -> new IngredientNotFound(command.getIngredient().getIngredientId().toString())),command.getIngredient().getAmount());
+        dish.addIngredient(ingredient);
         this.dishRepository.save(dish);
 
         return dish;
@@ -46,7 +61,7 @@ public class MenuCommandHandler {
     public Dish handle(RemoveIngredient command){
         Dish dish = this.getDishById(command.getId());
 
-        dish.removeIngredient(command.getIngredientid());
+        dish.removeIngredient(command.getIngredientId());
         this.dishRepository.save(dish);
 
         return dish;
@@ -60,9 +75,24 @@ public class MenuCommandHandler {
         return dish;
     }
 
+    public List<Dish> handle(ChangeDishStatus command) {
+        List<Dish> dishes = this.getDishByIngredientId(command.getIngredientId());
+
+        for (Dish dish: dishes){
+            dish.checkForIngredients(command.getIngredientId(), command.getAmount());
+        }
+        this.dishRepository.saveAll(dishes);
+
+        return dishes;
+    }
+
+    private List<Dish> getDishByIngredientId(UUID id) {
+        return this.dishRepository.findByIngredientId(id);
+//                .orElseThrow(() -> new DishNotFound(id.toString()));
+    }
+
     private Dish getDishById(UUID id) {
         return this.dishRepository.findByDishId(id)
                 .orElseThrow(() -> new DishNotFound(id.toString()));
     }
-
 }
