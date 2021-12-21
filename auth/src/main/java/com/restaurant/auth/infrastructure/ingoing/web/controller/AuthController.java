@@ -2,12 +2,14 @@ package com.restaurant.auth.infrastructure.ingoing.web.controller;
 
 import com.restaurant.auth.core.application.command.*;
 import com.restaurant.auth.core.application.document.GetUserDocument;
+import com.restaurant.auth.core.application.document.LoginUserDocument;
 import com.restaurant.auth.core.application.handler.AuthCommandHandler;
 import com.restaurant.auth.core.application.handler.AuthQueryHandler;
 import com.restaurant.auth.core.application.query.GetUserQuery;
 import com.restaurant.auth.core.domain.exception.*;
 import com.restaurant.auth.infrastructure.ingoing.web.request.*;
 import com.restaurant.auth.infrastructure.ingoing.web.response.GetUserResponse;
+import com.restaurant.auth.infrastructure.ingoing.web.response.LoginUserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +31,9 @@ public class AuthController {
     }
 
     @PostMapping("/user/{username}")
-    public String loginUser(@PathVariable String username, @RequestBody LoginUserRequest request) {
-        return this.commandHandler.handle(new LoginUserCommand(username, request.password()));
+    public LoginUserResponse loginUser(@PathVariable String username, @RequestBody LoginUserRequest request) {
+        LoginUserDocument document = this.commandHandler.handle(new LoginUserCommand(username, request.password()));
+        return new LoginUserResponse(document.token());
     }
 
     @PatchMapping("/user/password/{token}")

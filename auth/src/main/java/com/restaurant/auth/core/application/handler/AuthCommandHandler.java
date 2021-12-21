@@ -1,21 +1,32 @@
 package com.restaurant.auth.core.application.handler;
 
 import com.restaurant.auth.core.application.command.*;
+import com.restaurant.auth.core.application.document.LoginUserDocument;
 import com.restaurant.auth.core.domain.element.Gender;
 import com.restaurant.auth.core.domain.element.Role;
+import com.restaurant.auth.core.domain.element.Token;
 import com.restaurant.auth.core.domain.element.User;
 import com.restaurant.auth.core.domain.exception.*;
+import com.restaurant.auth.core.port.storage.TokenRepository;
 import com.restaurant.auth.core.port.storage.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.Base64;
 
 @Service
 public class AuthCommandHandler {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
+    private final SecureRandom secureRandom;
+    private static Base64.Encoder base64Encoder;
 
     public AuthCommandHandler(UserRepository userRepository, TokenRepository tokenRepository) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
+        this.secureRandom = new SecureRandom();
+        this.base64Encoder = Base64.getUrlEncoder();
 
         // Create admin account
         if(this.userRepository.findById("admin").isEmpty()) {
@@ -34,7 +45,7 @@ public class AuthCommandHandler {
         this.userRepository.save(user);
     }
 
-    public String handle(LoginUserCommand command) {
+    public LoginUserDocument handle(LoginUserCommand command) {
         if (this.userRepository.findById(command.username()).isEmpty()) {
             throw new UserNotFound();
         }
@@ -45,7 +56,13 @@ public class AuthCommandHandler {
             throw new IncorrectPassword();
         }
 
-        return new StringBuilder(command.username()).reverse().toString();
+        byte[] randomBytes = new byte[24];
+        secureRandom.nextBytes(randomBytes);
+        String tokenValue = base64Encoder.encodeToString(randomBytes);
+        Token token = new Token(tokenValue, command.username());
+        this.tokenRepository.save(token);
+
+        return new LoginUserDocument(token.getValue());
     }
 
     public void handle(ChangeUserPasswordCommand command) {
@@ -53,13 +70,13 @@ public class AuthCommandHandler {
             throw new Unauthorized();
         }
 
-        String username = this.tokenRepository.findById(username).get();
+        Token token = this.tokenRepository.findById(command.token()).get();
 
-        if(this.userRepository.findById(username).isEmpty()) {
+        if(this.userRepository.findById(token.getUsername()).isEmpty()) {
             throw new Unauthorized();
         }
 
-        User user = this.userRepository.findById(username).get();
+        User user = this.userRepository.findById(token.getUsername()).get();
 
         if (!command.oldPassword().equals(user.getPassword())) {
             throw new IncorrectPassword();
@@ -71,13 +88,17 @@ public class AuthCommandHandler {
     }
 
     public void handle(ChangeUserRoleCommand command) {
-        String adminUsername = new StringBuilder(command.token()).reverse().toString();
-
-        if(this.userRepository.findById(adminUsername).isEmpty()) {
+        if(this.tokenRepository.findById(command.token()).isEmpty()) {
             throw new Unauthorized();
         }
 
-        User adminUser = this.userRepository.findById(adminUsername).get();
+        Token token = this.tokenRepository.findById(command.token()).get();
+
+        if(this.userRepository.findById(token.getUsername()).isEmpty()) {
+            throw new Unauthorized();
+        }
+
+        User adminUser = this.userRepository.findById(token.getUsername()).get();
 
         if(!adminUser.getRole().equals(Role.ADMIN)){
             throw new Unauthorized();
@@ -99,13 +120,17 @@ public class AuthCommandHandler {
     }
 
     public void handle(ChangeUserInfoCommand command) {
-        String username = new StringBuilder(command.token()).reverse().toString();
-
-        if(this.userRepository.findById(username).isEmpty()) {
+        if(this.tokenRepository.findById(command.token()).isEmpty()) {
             throw new Unauthorized();
         }
 
-        User user = this.userRepository.findById(username).get();
+        Token token = this.tokenRepository.findById(command.token()).get();
+
+        if(this.userRepository.findById(token.getUsername()).isEmpty()) {
+            throw new Unauthorized();
+        }
+
+        User user = this.userRepository.findById(token.getUsername()).get();
 
         user.setFirstName(command.firstName());
         user.setLastName(command.lastName());
@@ -120,13 +145,17 @@ public class AuthCommandHandler {
     }
 
     public void handle(DeleteUserCommand command) {
-        String username = new StringBuilder(command.token()).reverse().toString();
-
-        if (this.userRepository.findById(username).isEmpty()) {
+        if(this.tokenRepository.findById(command.token()).isEmpty()) {
             throw new Unauthorized();
         }
 
-        User user = this.userRepository.findById(username).get();
+        Token token = this.tokenRepository.findById(command.token()).get();
+
+        if(this.userRepository.findById(token.getUsername()).isEmpty()) {
+            throw new Unauthorized();
+        }
+
+        User user = this.userRepository.findById(token.getUsername()).get();
 
         if (!command.password().equals(user.getPassword())) {
             throw new IncorrectPassword();

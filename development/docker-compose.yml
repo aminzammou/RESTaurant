@@ -1,47 +1,19 @@
 version: "3.7"
 services:
-  # https://hub.docker.com/_/rabbitmq
   rabbitmq:
     image: rabbitmq:3-management-alpine
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - ./rabbitmq/volume/data/:/var/lib/rabbitmq/
       - ./rabbitmq/volume/log/:/var/log/rabbitmq/
-
-  # https://hub.docker.com/_/mongo
   mongodb:
     image: mongo:latest
-    container_name: mongo
-    restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
     ports:
-      - 27017:27017
+      - "27017:27017"
     volumes:
       - ./mongodb/volume/data/:/data/db/
-  authentication_app:
-    image: authentication
-    ports:
-      - 8081:8080
-
-  menu_app:
-    image: menu_app
-    ports:
-      - 8082:8080
-
-  order_app:
-    image: order_app
-    ports:
-      - 8083:8080
-
-  stock_app:
-    build:
-      context: ../stock
-      dockerfile: ../stock/Dockerfile
-    ports:
-      - 8084:8080
-    depends_on:
-      - mongodb
