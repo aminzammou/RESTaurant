@@ -16,6 +16,10 @@ public class RabbitMqEventListener {
 
     @RabbitListener(queues = "${messaging.queue.stock}")
     void listen(StockChangeEvent event) {
+        System.out.println(event.eventId);
+        System.out.println(event.eventDate.toString());
+        System.out.println(event.ingredientId);
+        System.out.println(event.stockAmount);
         this.commandHandler.handle(
             new ChangeDishStatus(event.ingredientId, event.stockAmount)
         );
