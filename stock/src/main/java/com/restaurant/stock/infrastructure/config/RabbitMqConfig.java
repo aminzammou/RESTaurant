@@ -29,6 +29,12 @@ public class RabbitMqConfig {
     @Value("${messaging.routing-key.order}")
     private String orderRoutingKey;
 
+    @Value("${messaging.queue.stock}")
+    private String stockQueueName;
+
+    @Value("${messaging.routing-key.stock}")
+    private String stockRoutingKey;
+
     @Value("${messaging.exchange.deadletter}")
     private String deadLetterExchangeName;
 
@@ -59,6 +65,11 @@ public class RabbitMqConfig {
     }
 
     @Bean
+    public Queue stockQueue() {
+        return QueueBuilder.durable(stockQueueName).withArgument("x-dead-letter-exchange", deadLetterExchangeName).withArgument("x-dead-letter-routing-key", deadLetterRoutingKey).build();
+    }
+
+    @Bean
     Binding DLQbinding() {
         return BindingBuilder.bind(dlQueue()).to(deadLetterExchange()).with(deadLetterRoutingKey);
     }
@@ -69,6 +80,14 @@ public class RabbitMqConfig {
                 .bind(orderQueue())
                 .to(restaurantExchange())
                 .with(orderRoutingKey);
+    }
+
+    @Bean
+    public Binding stockKeywordsBinding() {
+        return BindingBuilder
+                .bind(stockQueue())
+                .to(restaurantExchange())
+                .with(stockRoutingKey);
     }
 
     @Bean
