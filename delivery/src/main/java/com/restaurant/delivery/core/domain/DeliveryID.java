@@ -1,4 +1,4 @@
-package com.restaurant.order.core.domain;
+package com.restaurant.delivery.core.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
