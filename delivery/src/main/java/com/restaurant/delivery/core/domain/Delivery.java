@@ -1,5 +1,7 @@
 package com.restaurant.delivery.core.domain;
 
+import com.restaurant.delivery.core.domain.event.DeliveryEvent;
+import com.restaurant.delivery.core.domain.event.DeliveryStatusDeliverd;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,8 +26,8 @@ public class Delivery {
     private boolean isPrepaid;
     private DeliveryStatus deliveryStatus;
 
-//    @Transient
-//    private List<DeliveryEvent> events = new ArrayList<>();
+    @Transient
+    private List<DeliveryEvent> events = new ArrayList<>();
 
     public Delivery(Date departureTime, Date timeDeliverd, boolean isPrepaid) {
         this.id = new DeliveryID(UUID.randomUUID());
@@ -37,16 +39,16 @@ public class Delivery {
 
     public void changeStatus(DeliveryStatus deliveryStatus) {
         this.deliveryStatus = deliveryStatus;
-//        if (deliveryStatus == DeliveryStatus.Deliverd){
-//            this.events.add(new OrderStatusBeingPrepared(orderLines, orderStatus.toString()))
-//        }
+        if (deliveryStatus == DeliveryStatus.Deliverd){
+            this.events.add(new DeliveryStatusDeliverd(deliveryStatus.toString()));
+        }
 
     }
 
-//    public void clearEvents() {
-//        this.events.clear();
-//    }
-//    public List<DeliveryEvent> listEvents() {
-//        return events;
-//    }
+    public void clearEvents() {
+        this.events.clear();
+    }
+    public List<DeliveryEvent> listEvents() {
+        return events;
+    }
 }

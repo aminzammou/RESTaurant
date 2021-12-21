@@ -12,17 +12,12 @@ public class RabbitMqEventListener {
 //        this.commandHandler = commandHandler;
 //    }
 
-    @RabbitListener(queues = "${messaging.queue.order}")
-    void listen(CreateOrderEvent event) throws Exception {
-        System.out.println(event.eventId);
-        System.out.println(event.eventDate.toString());
-        System.out.println(event.status);
-        System.out.println(event.orderId);
-//        for(int orderLineIndex = 0; orderLineIndex < event.orders.size(); orderLineIndex++) {
-//            OrderLine orderLine = event.orders.get(orderLineIndex);
-//            for(int amountIndex = 0; amountIndex < orderLine.getAmount(); amountIndex++) {
-//                this.commandHandler.handle(new DecreaseStockByDish(orderLine.getDish().getId().getId()));
-//            }
-//        }
-    }
+//    @RabbitListener(queues = "${messaging.routing-key.order}")
+//    void listen(CreateOrderEvent event) throws Exception {
+//        System.out.println(event.eventId);
+//        System.out.println(event.eventDate.toString());
+//        System.out.println(event.status);
+//        System.out.println(event.orderId);
+//        DoneForDelivery
+//    }
 }

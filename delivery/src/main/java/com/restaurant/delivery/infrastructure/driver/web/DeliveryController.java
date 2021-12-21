@@ -1,10 +1,13 @@
 package com.restaurant.delivery.infrastructure.driver.web;
+import com.rabbitmq.client.AMQP;
 import com.restaurant.delivery.core.application.DeliveryCommandHandler;
 import com.restaurant.delivery.core.application.DeliveryQueryHandler;
+import com.restaurant.delivery.core.application.command.ChangeDeliveryStatus;
 import com.restaurant.delivery.core.application.command.CreateDelivery;
 import com.restaurant.delivery.core.application.query.GetDeliveryById;
 import com.restaurant.delivery.core.application.query.ListDeliveries;
 import com.restaurant.delivery.core.domain.Delivery;
+import com.restaurant.delivery.infrastructure.driver.web.request.ChangeDeliveryStatusRequest;
 import com.restaurant.delivery.infrastructure.driver.web.request.CreateDeliveryRequest;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,11 +36,11 @@ public class DeliveryController {
         );
     }
 
-//    @PostMapping("/{id}/change-status")
-//    public Order changeStatus(@PathVariable UUID id, @Valid @RequestBody ChangeOrderStatusRequest request) {
-//        return this.commandHandler.handle(new ChangeOrderStatus(id, request.status));
-//    }
-//
+    @PostMapping("/{id}/change-status")
+    public Delivery changeStatus(@PathVariable UUID id, @Valid @RequestBody ChangeDeliveryStatusRequest request) {
+        return this.commandHandler.handle(new ChangeDeliveryStatus(id, request.status));
+    }
+
     @GetMapping("/{id}")
     public Delivery findDeliveryById(@PathVariable String id) {
         return this.queryHandler.handle(new GetDeliveryById(UUID.fromString(id)));
