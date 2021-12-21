@@ -19,9 +19,9 @@ public class RabbitMqEventListener {
         System.out.println(event.eventId);
         System.out.println(event.eventDate.toString());
         System.out.println(event.ingredientId);
-        System.out.println(event.stockAmount);
+        System.out.println(event.newAmount);
         this.commandHandler.handle(
-            new ChangeDishStatus(event.ingredientId, event.stockAmount)
+            new ChangeDishStatus(event.ingredientId, event.newAmount)
         );
 
 //        switch (event.eventKey) {

@@ -1,6 +1,7 @@
 package com.restaurant.menu.core.domain;
 
 import com.restaurant.menu.core.application.command.ChangeDishStatus;
+import com.restaurant.menu.core.domain.exception.IngredientNotFound;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,8 +9,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -68,13 +71,20 @@ public class Dish {
     }
 
     public void setMaxAmount(List<ChangeDishStatus> dishIngredients) {
+        List<Integer> max = new ArrayList<>();
         for (ChangeDishStatus ingredient: dishIngredients){
-            Ingredient ingredient1 = ingredients.get(ingredients.indexOf(ingredient.getIngredientId())+1);
-            int maxWithIngredient = ingredient.getAmount()/ingredient1.getAmount();
-            if(maxWithIngredient<maxAmount||maxAmount == 0){
-                maxAmount = maxWithIngredient;
-            }
+            Ingredient ingredient1 = this.ingredients.stream().filter(ing -> ing.getIngredientId().compareTo(ingredient.getIngredientId()) == 0).findAny().orElseThrow(() -> new IngredientNotFound("Ingredient not found"));
+
+            int amountInStock = ingredient.getAmount();
+
+            int maxWithIngredient = amountInStock/ingredient1.getAmount();
+
+            max.add(maxWithIngredient);
+//            if(maxWithIngredient<maxAmount||maxAmount == 0){
+//                maxAmount = maxWithIngredient;
+//            }
         }
+        maxAmount = Collections.min(max);
     }
 
     public void removeIngredient(UUID ingredientId){

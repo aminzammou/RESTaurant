@@ -8,5 +8,5 @@ public class StockChangeEvent {
     public String eventKey;
     public Instant eventDate;
     public UUID ingredientId;
-    public int stockAmount;
+    public int newAmount;
 }

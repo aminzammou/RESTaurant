@@ -34,7 +34,7 @@ public class HttpIngredientRepository implements IngredientRepository {
         }
         UUID ingredientId = UUID.fromString(results.getIngredient().getId());
 
-        return Optional.of(new Ingredient(ingredientId));
+        return Optional.of(new Ingredient(ingredientId, results.getAmount()));
 
 
     }
