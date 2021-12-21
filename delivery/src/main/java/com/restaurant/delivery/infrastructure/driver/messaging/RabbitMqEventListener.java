@@ -17,6 +17,7 @@ public class RabbitMqEventListener {
         System.out.println(event.eventId);
         System.out.println(event.eventDate.toString());
         System.out.println(event.status);
+        System.out.println(event.orderId);
 //        for(int orderLineIndex = 0; orderLineIndex < event.orders.size(); orderLineIndex++) {
 //            OrderLine orderLine = event.orders.get(orderLineIndex);
 //            for(int amountIndex = 0; amountIndex < orderLine.getAmount(); amountIndex++) {
