@@ -4,13 +4,16 @@ import com.restaurant.stock.core.application.command.AddIngredient;
 import com.restaurant.stock.core.application.command.DecreaseStockByDish;
 import com.restaurant.stock.core.application.command.RemoveIngredient;
 import com.restaurant.stock.core.domain.*;
+import com.restaurant.stock.core.domain.event.StockEvent;
 import com.restaurant.stock.core.domain.exception.StockItemNotFound;
 import com.restaurant.stock.core.domain.exception.StockLessThenZero;
+import com.restaurant.stock.core.port.messaging.StockEventPublisher;
 import com.restaurant.stock.core.port.storage.DishRepository;
 import com.restaurant.stock.core.port.storage.IngredientRepository;
 import com.restaurant.stock.core.port.storage.StockItemRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,11 +22,13 @@ public class StockCommandHandler {
     private StockItemRepository stockItemRepository;
     private IngredientRepository ingredientRepository;
     private DishRepository dishRepository;
+    private StockEventPublisher eventPublisher;
 
-    public StockCommandHandler(StockItemRepository stockItemRepository, IngredientRepository ingredientRepository, DishRepository dishRepository) {
+    public StockCommandHandler(StockItemRepository stockItemRepository, IngredientRepository ingredientRepository, DishRepository dishRepository, StockEventPublisher eventPublisher) {
         this.stockItemRepository = stockItemRepository;
         this.ingredientRepository = ingredientRepository;
         this.dishRepository = dishRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public StockItem handle(AddIngredient command) {
@@ -50,6 +55,7 @@ public class StockCommandHandler {
             DishIngredient dishIngredient = dish.getIngredients().get(i);
             StockItem stockItem = this.stockItemRepository.findByIngredient(new IngredientId(dishIngredient.getIngredientId())).orElseThrow();
             stockItem.decreaseStock(dishIngredient.getAmount());
+            this.publishEvents(stockItem);
             this.stockItemRepository.save(stockItem);
         }
 
@@ -80,6 +86,13 @@ public class StockCommandHandler {
             stockItem = new StockItem(ingredient.getId(), command.getAmount());
         }
         return this.stockItemRepository.save(stockItem);
+    }
+
+    private StockItem publishEvents(StockItem stockItem) {
+        List<StockEvent> events = stockItem.listEvents();
+        events.forEach(eventPublisher::publish);
+        stockItem.clearEvents();
+        return stockItem;
     }
 
 //    public StockItem handle(AddIngredient command) {
