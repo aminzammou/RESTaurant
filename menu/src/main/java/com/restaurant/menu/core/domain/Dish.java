@@ -1,5 +1,6 @@
 package com.restaurant.menu.core.domain;
 
+import com.restaurant.menu.core.application.command.ChangeDishStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,12 @@ public class Dish {
     private State state;
     private List<Ingredient> ingredients = new ArrayList<>();
 
+    public int getMaxAmount() {
+        return maxAmount;
+    }
+
+    private int maxAmount;
+
     public Dish(String name, Category category, double price, State state, List<Ingredient> ingredients) {
         this.dishId = new DishId(UUID.randomUUID());
         this.name = name;
@@ -32,9 +39,16 @@ public class Dish {
         this.ingredients = ingredients;
     }
 
+    public Dish(String name, Category category, double price, State state, List<Ingredient> ingredients, int maxAmount) {
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.state = state;
+        this.ingredients = ingredients;
+        this.maxAmount = maxAmount;
+    }
 
-
-    public void checkForIngredients(UUID ingredientId,int amount){
+    public void checkForIngredients(UUID ingredientId, int amount){
         Ingredient ingredient = ingredients.get(ingredients.indexOf(ingredientId)+1);
         if (ingredient.getAmount()<amount){
             this.state = State.Available;
@@ -47,8 +61,20 @@ public class Dish {
         this.name= name;
     }
 
-    public void addIngredient(Ingredient ingredient){
-        this.ingredients.add(ingredient);
+    public void addIngredient(Ingredient newIngredient){
+        //                oldIngredient.setAmount(newIngredient.getAmount());
+        ingredients.removeIf(oldIngredient -> oldIngredient.getIngredientId().equals(newIngredient.getIngredientId()));
+        this.ingredients.add(newIngredient);
+    }
+
+    public void setMaxAmount(List<ChangeDishStatus> dishIngredients) {
+        for (ChangeDishStatus ingredient: dishIngredients){
+            Ingredient ingredient1 = ingredients.get(ingredients.indexOf(ingredient.getIngredientId())+1);
+            int maxWithIngredient = ingredient.getAmount()/ingredient1.getAmount();
+            if(maxWithIngredient<maxAmount||maxAmount == 0){
+                maxAmount = maxWithIngredient;
+            }
+        }
     }
 
     public void removeIngredient(UUID ingredientId){

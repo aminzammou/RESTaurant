@@ -14,8 +14,12 @@ public class RabbitMqEventListener {
         this.commandHandler = commandHandler;
     }
 
-//    @RabbitListener(queues = "#{'${messaging.queue.stock}'}")
-//    void listen(StockChangeEvent event) {
+    @RabbitListener(queues = "${messaging.queue.stock}")
+    void listen(StockChangeEvent event) {
+        this.commandHandler.handle(
+            new ChangeDishStatus(event.ingredientId, event.stockAmount)
+        );
+
 //        switch (event.eventKey) {
 //            case "stock.ingredient.changed":
 //                this.commandHandler.handle(
@@ -28,5 +32,5 @@ public class RabbitMqEventListener {
 //                );
 //                break;
 //        }
-//    }
+    }
 }

@@ -10,7 +10,9 @@ import com.restaurant.menu.core.port.storage.IngredientRepository;
 import com.restaurant.menu.infrastructure.driver.web.request.ingredientTest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,6 +28,12 @@ public class MenuCommandHandler {
     public Dish handle(CreateDish command) {
         Dish dish = new Dish(command.getName(), command.getCategory(), command.getPrice(), command.getState(), command.getIngredientList());
 
+        List<ChangeDishStatus> ingredients = new ArrayList<>();
+        for (Ingredient ingredient: dish.getIngredients()) {
+            Ingredient ingredientFromRepository = ingredientRepository.findById(ingredient.getIngredientId()).orElseThrow(() -> new IngredientNotFound(ingredient.getIngredientId().toString()));
+            ingredients.add(new ChangeDishStatus(ingredientFromRepository.getIngredientId(),ingredientFromRepository.getAmount()));
+        }
+        dish.setMaxAmount(ingredients);
         this.dishRepository.save(dish);
 
         return dish;

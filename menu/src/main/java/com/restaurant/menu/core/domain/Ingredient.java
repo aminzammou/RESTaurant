@@ -3,6 +3,7 @@ package com.restaurant.menu.core.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 public class Ingredient {
     @Id
     private UUID ingredientId;
@@ -26,4 +28,5 @@ public class Ingredient {
     public Ingredient(UUID ingredientId) {
         this.ingredientId = ingredientId;
     }
+
 }
