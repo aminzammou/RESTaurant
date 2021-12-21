@@ -1,7 +1,6 @@
 package com.restaurant.order.core.domain;
 
-import com.restaurant.order.core.domain.event.OrderEvent;
-import com.restaurant.order.core.domain.event.OrderStatusChanged;
+import com.restaurant.order.core.domain.event.*;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -43,7 +42,14 @@ public class Order {
 
     public void changeStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
-        this.events.add(new OrderStatusChanged(orderLines,orderStatus.toString()));
+        switch (orderStatus) {
+            case BeingPrepared -> this.events.add(new OrderStatusBeingPrepared(orderLines, orderStatus.toString()));
+            case Deliverd -> this.events.add(new OrderStatusDeliverd(orderLines, orderStatus.toString()));
+            case Canceled -> this.events.add(new OrderStatusCanceled(orderLines, orderStatus.toString()));
+            default -> {
+            }
+        }
+
     }
 
     public Double calculateTotalPrice(List<OrderLine> orderLines){
