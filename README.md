@@ -4,7 +4,7 @@
 
 ## Responsibility for each microservice
 - Order > Amin + Youri
-- Delivery > Amin + Youri
+- Delivery > Amin
 - Stock > Richard
 - Menu  > Daan
 - Auth  > Hugo
