@@ -7,10 +7,7 @@ import java.util.List;
 //@Value
 public class CreateDeliveryRequest {
     @NotBlank
-    public Date departureTime;
-
-    public Date timeDeliverd;
-    public boolean isPrepaid;
+    public String orderId;
 
     public CreateDeliveryRequest() {
     }

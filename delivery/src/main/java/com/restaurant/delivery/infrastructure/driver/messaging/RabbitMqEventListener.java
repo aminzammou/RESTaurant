@@ -1,9 +1,12 @@
 package com.restaurant.delivery.infrastructure.driver.messaging;
 
 import com.restaurant.delivery.core.application.DeliveryCommandHandler;
+import com.restaurant.delivery.core.application.command.CreateDelivery;
 import com.restaurant.delivery.infrastructure.driver.messaging.event.CreateOrderEvent;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class RabbitMqEventListener {
@@ -20,6 +23,6 @@ public class RabbitMqEventListener {
         System.out.println(event.eventDate.toString());
         System.out.println(event.status);
         System.out.println(event.orderId);
-//        DoneForDelivery
+        this.commandHandler.handle(new CreateDelivery(event.orderId));
     }
 }

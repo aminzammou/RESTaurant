@@ -7,4 +7,5 @@ public class DeliveryEvent {
     public UUID eventId;
     public Instant eventDate;
     public String status;
+    public UUID orderId;
 }
