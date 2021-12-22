@@ -13,8 +13,8 @@ import com.restaurant.menu.core.domain.event.ListIngredients;
 import com.restaurant.menu.infrastructure.driver.web.request.*;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,7 +63,7 @@ public class menuController {
 
     @PostMapping("/dish")
     public Dish createDish(@Valid @RequestBody CreateDishRequest request) {
-        return this.commandHandler.handle(new CreateDish(request.name, request.category, request.price, request.state, request.ingredientList)
+        return this.commandHandler.handle(new CreateDish(request.name, request.category, request.price, request.isAvailable, request.ingredientList)
         );
     }
 

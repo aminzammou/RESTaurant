@@ -33,7 +33,7 @@ public class HttpDishRepository implements DishRepository {
         }
         DishID dishId = new DishID(UUID.fromString(results.getDishId().getId()));
 
-        return Optional.of(new Dish(dishId, results.getPrice(), results.getName()));
+        return Optional.of(new Dish(dishId, results.getPrice(), results.getName(), results.isAvailable(), results.getMaxAmount()));
 
 
     }

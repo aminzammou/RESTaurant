@@ -11,6 +11,8 @@ import com.restaurant.order.core.domain.Dish;
 import com.restaurant.order.core.domain.DishID;
 import com.restaurant.order.core.domain.Order;
 import com.restaurant.order.core.domain.OrderLine;
+import com.restaurant.order.core.domain.exception.OrderNotAvailable;
+import com.restaurant.order.core.domain.exception.OrderNotFound;
 import com.restaurant.order.core.ports.storage.OrderRepository;
 import com.restaurant.order.infrasructure.driver.web.request.ChangeOrderStatusRequest;
 import com.restaurant.order.infrasructure.driver.web.request.CreateOrderRequest;
@@ -31,7 +33,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public Order registerOrder(@Valid @RequestBody CreateOrderRequest request) {
+    public Order registerOrder(@Valid @RequestBody CreateOrderRequest request) throws OrderNotAvailable, OrderNotFound {
         return this.commandHandler.handle(
                 new CreateOrder(
                         request.client.name, request.client.email, request.note,

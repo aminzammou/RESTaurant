@@ -15,6 +15,8 @@ public class DishResult {
     private String name;
     private Double price;
     private String category;
+    private boolean isAvailable;
+    private int maxAmount;
 //    private String ingredients;
 
 //    public String getDishId() {
