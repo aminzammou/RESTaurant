@@ -17,6 +17,6 @@ public class OrderStatusBeingPrepared extends OrderEvent {
 
     @Override
     public String getEventKey() {
-        return "order.beingPrepared";
+        return "order.status.beingPrepared";
     }
 }

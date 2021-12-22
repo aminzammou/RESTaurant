@@ -17,6 +17,6 @@ public class OrderStatusDeliverd extends OrderEvent {
 
     @Override
     public String getEventKey() {
-        return "order.delivered";
+        return "order.status.delivered";
     }
 }
