@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class QueryHandler {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
+    private static final long MAX_TOKEN_AGE = 1800;
 
     public QueryHandler(UserRepository userRepository, TokenRepository tokenRepository) {
         this.userRepository = userRepository;
@@ -20,19 +21,36 @@ public class QueryHandler {
     }
 
     public FindUserDocument handle(FindUserQuery query) {
-        // Retrieve token
-        if(this.tokenRepository.findById(query.token()).isEmpty()) {
-            throw new Unauthorized();
-        }
-        Token token = this.tokenRepository.findById(query.token()).get();
+        // Validate token
+        String username = validateToken(query.token());
 
         // Retrieve user
-        if(this.userRepository.findById(token.getUsername()).isEmpty()) {
+        if(this.userRepository.findById(username).isEmpty()) {
             throw new Unauthorized();
         }
-        User user = this.userRepository.findById(token.getUsername()).get();
+        User user = this.userRepository.findById(username).get();
 
         // Return user
         return new FindUserDocument(user.getUsername(), user.getRole().name(), user.getFirstName(), user.getLastName(), user.getGender().name());
+    }
+
+    private String validateToken(String tokenValue) {
+        // Validate token existence
+        if(this.tokenRepository.findById(tokenValue).isEmpty()) {
+            throw new Unauthorized();
+        }
+
+        // Calculate token age
+        Token token = this.tokenRepository.findById(tokenValue).get();
+        long epoch = (System.currentTimeMillis() / 1000L);
+        long tokenAge = (epoch - token.getEpoch());
+
+        // Validate token age
+        if(tokenAge > MAX_TOKEN_AGE) {
+            throw new Unauthorized();
+        }
+
+        // Return token username
+        return token.getUsername();
     }
 }

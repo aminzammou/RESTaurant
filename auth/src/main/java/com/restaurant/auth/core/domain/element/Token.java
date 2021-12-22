@@ -15,9 +15,14 @@ public class Token {
     @Indexed
     private final String username;
 
-    public Token(String value, String username) {
+    @Field
+    @Indexed
+    private final long epoch;
+
+    public Token(String value, String username, long epoch) {
         this.value = value;
         this.username = username;
+        this.epoch = epoch;
     }
 
     public String getValue() {
@@ -26,5 +31,9 @@ public class Token {
 
     public String getUsername() {
         return username;
+    }
+
+    public long getEpoch() {
+        return epoch;
     }
 }

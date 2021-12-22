@@ -17,8 +17,9 @@ import java.util.Base64;
 public class CommandHandler {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
-    private final SecureRandom secureRandom = new SecureRandom();
+    private static final SecureRandom secureRandom = new SecureRandom();
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder();
+    private static final long MAX_TOKEN_AGE = 1800;
 
     public CommandHandler(UserRepository userRepository, TokenRepository tokenRepository) {
         this.userRepository = userRepository;
@@ -58,7 +59,8 @@ public class CommandHandler {
         byte[] randomBytes = new byte[24];
         secureRandom.nextBytes(randomBytes);
         String tokenValue = base64Encoder.encodeToString(randomBytes);
-        Token token = new Token(tokenValue, command.username());
+        long epoch = (System.currentTimeMillis() / 1000L);
+        Token token = new Token(tokenValue, command.username(), epoch);
         this.tokenRepository.save(token);
 
         // Return token value
@@ -66,14 +68,11 @@ public class CommandHandler {
     }
 
     public void handle(LogoutUserCommand command) {
-        // Retrieve token
-        if(this.tokenRepository.findById(command.token()).isEmpty()) {
-            throw new Unauthorized();
-        }
-        Token token = this.tokenRepository.findById(command.token()).get();
+        // Validate token
+        String username = validateToken(command.token());
 
         // Validate username
-        if(this.userRepository.findById(token.getUsername()).isEmpty()) {
+        if(this.userRepository.findById(username).isEmpty()) {
             throw new Unauthorized();
         }
 
@@ -82,17 +81,14 @@ public class CommandHandler {
     }
 
     public void handle(ChangeUserPasswordCommand command) {
-        // Retrieve token
-        if(this.tokenRepository.findById(command.token()).isEmpty()) {
-            throw new Unauthorized();
-        }
-        Token token = this.tokenRepository.findById(command.token()).get();
+        // Validate token
+        String username = validateToken(command.token());
 
         // Retrieve user
-        if(this.userRepository.findById(token.getUsername()).isEmpty()) {
+        if(this.userRepository.findById(username).isEmpty()) {
             throw new Unauthorized();
         }
-        User user = this.userRepository.findById(token.getUsername()).get();
+        User user = this.userRepository.findById(username).get();
 
         // Set password
         if (!command.oldPassword().equals(user.getPassword())) {
@@ -105,17 +101,14 @@ public class CommandHandler {
     }
 
     public void handle(ChangeUserRoleCommand command) {
-        // Retrieve token
-        if(this.tokenRepository.findById(command.token()).isEmpty()) {
-            throw new Unauthorized();
-        }
-        Token token = this.tokenRepository.findById(command.token()).get();
+        // Validate token
+        String username = validateToken(command.token());
 
         // Retrieve admin
-        if(this.userRepository.findById(token.getUsername()).isEmpty()) {
+        if(this.userRepository.findById(username).isEmpty()) {
             throw new Unauthorized();
         }
-        User admin = this.userRepository.findById(token.getUsername()).get();
+        User admin = this.userRepository.findById(username).get();
 
         // Validate role
         if(!admin.getRole().equals(Role.ADMIN)){
@@ -140,17 +133,14 @@ public class CommandHandler {
     }
 
     public void handle(ChangeUserInfoCommand command) {
-        // Retrieve token
-        if(this.tokenRepository.findById(command.token()).isEmpty()) {
-            throw new Unauthorized();
-        }
-        Token token = this.tokenRepository.findById(command.token()).get();
+        // Validate token
+        String username = validateToken(command.token());
 
         // Retrieve user
-        if(this.userRepository.findById(token.getUsername()).isEmpty()) {
+        if(this.userRepository.findById(username).isEmpty()) {
             throw new Unauthorized();
         }
-        User user = this.userRepository.findById(token.getUsername()).get();
+        User user = this.userRepository.findById(username).get();
 
         // Set names
         user.setFirstName(command.firstName());
@@ -168,17 +158,14 @@ public class CommandHandler {
     }
 
     public void handle(DeleteUserCommand command) {
-        // Retrieve token
-        if(this.tokenRepository.findById(command.token()).isEmpty()) {
-            throw new Unauthorized();
-        }
-        Token token = this.tokenRepository.findById(command.token()).get();
+        // Validate token
+        String username = validateToken(command.token());
 
         // Retrieve user
-        if(this.userRepository.findById(token.getUsername()).isEmpty()) {
+        if(this.userRepository.findById(username).isEmpty()) {
             throw new Unauthorized();
         }
-        User user = this.userRepository.findById(token.getUsername()).get();
+        User user = this.userRepository.findById(username).get();
 
         // Validate password
         if (!command.password().equals(user.getPassword())) {
@@ -187,5 +174,25 @@ public class CommandHandler {
 
         // Delete user
         this.userRepository.delete(user);
+    }
+
+    private String validateToken(String tokenValue) {
+        // Validate token existence
+        if(this.tokenRepository.findById(tokenValue).isEmpty()) {
+            throw new Unauthorized();
+        }
+
+        // Calculate token age
+        Token token = this.tokenRepository.findById(tokenValue).get();
+        long epoch = (System.currentTimeMillis() / 1000L);
+        long tokenAge = (epoch - token.getEpoch());
+
+        // Validate token age
+        if(tokenAge > MAX_TOKEN_AGE) {
+            throw new Unauthorized();
+        }
+
+        // Return token username
+        return token.getUsername();
     }
 }
