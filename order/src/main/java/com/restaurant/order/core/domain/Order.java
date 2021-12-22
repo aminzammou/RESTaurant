@@ -26,10 +26,12 @@ public class Order {
     private Double totalPrice;
     private String note;
     private OrderStatus orderStatus;
+    private Address address;
     @Transient
     private List<OrderEvent> events = new ArrayList<>();
 
-    public Order(String name, String email, String note, List<OrderLine> orderLines) {
+    public Order(String name, String email, String note, List<OrderLine> orderLines,
+                 String streetName, int houseNumber, String postalCode, String city) {
         this.id = new OrderID(UUID.randomUUID());
         this.orderDateTime = LocalDate.now();
         this.orderLines = orderLines;
@@ -37,6 +39,7 @@ public class Order {
         this.name = name;
         this.email = email;
         this.note = note;
+        this.address = new Address(streetName, houseNumber, postalCode, city);
         changeStatus(OrderStatus.BeingPrepared);
     }
 

@@ -36,7 +36,7 @@ public class OrderCommandHandler {
         }
 
 
-        Order order = new Order(command.name(), command.email(), command.note(), orderLines);
+        Order order = new Order(command.name(), command.email(), command.note(), orderLines, command.streetName(), command.houseNumber(), command.postalCode(), command.city());
 
         this.publishEventsAndSave(order);
 
