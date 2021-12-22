@@ -51,9 +51,9 @@ public class Dish {
         this.maxAmount = maxAmount;
     }
 
-    public void checkForIngredients(UUID ingredientId, int amount){
-        Ingredient ingredient = ingredients.get(ingredients.indexOf(ingredientId)+1);
-        if (ingredient.getAmount()<amount){
+    public void checkForIngredients(){
+//        Ingredient ingredient = ingredients.get(ingredients.indexOf(ingredientId)+1);
+        if (maxAmount>0){
             this.state = State.Available;
         }else {
             this.state = State.NotAvailable;
@@ -80,11 +80,9 @@ public class Dish {
             int maxWithIngredient = amountInStock/ingredient1.getAmount();
 
             max.add(maxWithIngredient);
-//            if(maxWithIngredient<maxAmount||maxAmount == 0){
-//                maxAmount = maxWithIngredient;
-//            }
         }
         maxAmount = Collections.min(max);
+        checkForIngredients();
     }
 
     public void removeIngredient(UUID ingredientId){
