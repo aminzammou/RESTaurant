@@ -46,6 +46,7 @@ public class Order {
             case BeingPrepared -> this.events.add(new OrderStatusBeingPrepared(orderLines, orderStatus.toString()));
             case Deliverd -> this.events.add(new OrderStatusDeliverd(orderLines, orderStatus.toString()));
             case Canceled -> this.events.add(new OrderStatusCanceled(orderLines, orderStatus.toString()));
+            case DoneForDelivery -> this.events.add(new OrderStatusDoneForDelivery(id.getId(), orderStatus.toString()));
             default -> {
             }
         }

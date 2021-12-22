@@ -12,4 +12,11 @@ import java.util.UUID;
 public interface DishRepository extends MongoRepository<Dish, UUID> {
     @Query("{'_id._id': ?0 }")
     Optional<Dish> findByDishId(UUID id);
+
+//    @Query("{'_id._id': ?0 }")
+//    List<Dish> findByIngredientId(UUID id);
+
+    @Query("{'ingredients._id': ?0}")
+    List<Dish> findByIngredientId(UUID ingredientId);
+
 }
