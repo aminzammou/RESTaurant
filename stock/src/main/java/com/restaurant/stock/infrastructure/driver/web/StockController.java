@@ -38,11 +38,12 @@ public class StockController {
     }
 
     @GetMapping
-    List<StockItem> getStockItems(@RequestParam(required = false) UUID ingredientId) {
-        if(ingredientId == null) {
-            return this.queryHandler.handle(new GetAllStockItems());
-        }
+    List<StockItem> getStockItems() {
+        return this.queryHandler.handle(new GetAllStockItems());
+    }
 
-        return List.of(this.queryHandler.handle(new GetStockItemByIngredient(ingredientId)));
+    @GetMapping("/{ingredientId}")
+    StockItem getStockItemByIngredient(@PathVariable UUID ingredientId) {
+        return this.queryHandler.handle(new GetStockItemByIngredient(ingredientId));
     }
 }

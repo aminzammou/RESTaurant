@@ -1,6 +1,10 @@
 package com.restaurant.stock.infrastructure.driver.messaging;
 
 import com.restaurant.stock.core.application.StockCommandHandler;
+import com.restaurant.stock.core.application.command.DecreaseStockByDish;
+import com.restaurant.stock.infrastructure.driver.messaging.data.OrderLine;
+import com.restaurant.stock.infrastructure.driver.messaging.event.CreateOrderEvent;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,5 +15,16 @@ public class RabbitMqEventListener {
         this.commandHandler = commandHandler;
     }
 
-    //TODO:  https://github.com/arothuis-hu/example-jobboard/blob/main/candidates/src/main/java/nl/hu/bep3/jobboard/candidates/infrastructure/driver/messaging/RabbitMqEventListener.java
+    @RabbitListener(queues = "${messaging.queue.order}")
+    void listen(CreateOrderEvent event) throws Exception {
+        System.out.println(event.eventId);
+        System.out.println(event.eventDate.toString());
+        System.out.println(event.status);
+        for(int orderLineIndex = 0; orderLineIndex < event.orders.size(); orderLineIndex++) {
+            OrderLine orderLine = event.orders.get(orderLineIndex);
+            for(int amountIndex = 0; amountIndex < orderLine.getAmount(); amountIndex++) {
+                this.commandHandler.handle(new DecreaseStockByDish(orderLine.getDish().getId().getId()));
+            }
+        }
+    }
 }

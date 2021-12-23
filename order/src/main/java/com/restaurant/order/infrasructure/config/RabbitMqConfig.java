@@ -23,11 +23,35 @@ public class RabbitMqConfig {
     @Value("${messaging.exchange.restaurant}")
     private String restaurantExchangeName;
 
-    @Value("${messaging.queue.order}")
-    private String orderQueueName;
+    @Value("${messaging.queue.order.status}")
+    private String orderStatusQueueName;
 
-    @Value("${messaging.routing-key.order}")
-    private String orderRoutingKey;
+    @Value("${messaging.queue.order.doneForDelivery}")
+    private String orderDeliveryQueueName;
+
+    @Value("${messaging.routing-key.order.status}")
+    private String orderStatusRoutingKey;
+
+    @Value("${messaging.routing-key.order.doneForDelivery}")
+    private String orderDeliveryRoutingKey;
+
+//    @Value("${messaging.routing-key.being-prepared.order}")
+//    private String orderBeingPreparedRoutingKey;
+//
+//    @Value("${messaging.routing-key.delivered.order}")
+//    private String orderDeliveredRoutingKey;
+//
+//    @Value("${messaging.routing-key.canceled.order}")
+//    private String orderCanceledRoutingKey;
+
+    @Value("${messaging.exchange.deadletter}")
+    private String deadLetterExchangeName;
+
+    @Value("${messaging.queue.deadletter}")
+    private String deadletterQueueName;
+
+    @Value("${messaging.routing-key.deadletter}")
+    private String deadLetterRoutingKey;
 
     @Bean
     public TopicExchange restaurantExchange() {
@@ -35,17 +59,46 @@ public class RabbitMqConfig {
     }
 
     @Bean
-    public Queue orderQueue() {
-        // Creates a new queue in RabbitMQ
-        return QueueBuilder.durable(orderQueueName).build();
+    public DirectExchange deadLetterExchange() {
+        return new DirectExchange(deadLetterExchangeName);
     }
 
     @Bean
-    public Binding orderBinding() {
+    public Queue dlQueue() {
+        return QueueBuilder.durable(deadletterQueueName).build();
+    }
+
+    @Bean
+    public Queue orderStatusQueue() {
+        // Creates a new queue in RabbitMQ
+        return QueueBuilder.durable(orderStatusQueueName).withArgument("x-dead-letter-exchange", deadLetterExchangeName).withArgument("x-dead-letter-routing-key", deadLetterRoutingKey).build();
+    }
+
+    @Bean
+    public Queue orderDeliveryQueue() {
+        // Creates a new queue in RabbitMQ
+        return QueueBuilder.durable(orderDeliveryQueueName).withArgument("x-dead-letter-exchange", deadLetterExchangeName).withArgument("x-dead-letter-routing-key", deadLetterRoutingKey).build();
+    }
+
+    @Bean
+    public Binding orderStatusBinding() {
         return BindingBuilder
-                .bind(orderQueue())
+                .bind(orderStatusQueue())
                 .to(restaurantExchange())
-                .with(orderRoutingKey);
+                .with(orderStatusRoutingKey);
+    }
+
+    @Bean
+    public Binding orderDeliveryBinding() {
+        return BindingBuilder
+                .bind(orderDeliveryQueue())
+                .to(restaurantExchange())
+                .with(orderDeliveryRoutingKey);
+    }
+
+    @Bean
+    Binding DLQbinding() {
+        return BindingBuilder.bind(dlQueue()).to(deadLetterExchange()).with(deadLetterRoutingKey);
     }
 
     @Bean
