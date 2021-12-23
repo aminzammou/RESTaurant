@@ -1,13 +1,15 @@
 package com.restaurant.auth.infrastructure.ingoing.web.controller;
 
 import com.restaurant.auth.core.application.command.*;
-import com.restaurant.auth.core.application.document.GetUserDocument;
-import com.restaurant.auth.core.application.handler.AuthCommandHandler;
-import com.restaurant.auth.core.application.handler.AuthQueryHandler;
-import com.restaurant.auth.core.application.query.GetUserQuery;
+import com.restaurant.auth.core.application.document.FindUserDocument;
+import com.restaurant.auth.core.application.document.LoginUserDocument;
+import com.restaurant.auth.core.application.handler.CommandHandler;
+import com.restaurant.auth.core.application.handler.QueryHandler;
+import com.restaurant.auth.core.application.query.FindUserQuery;
 import com.restaurant.auth.core.domain.exception.*;
 import com.restaurant.auth.infrastructure.ingoing.web.request.*;
-import com.restaurant.auth.infrastructure.ingoing.web.response.GetUserResponse;
+import com.restaurant.auth.infrastructure.ingoing.web.response.FindUserResponse;
+import com.restaurant.auth.infrastructure.ingoing.web.response.LoginUserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,48 +17,54 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final AuthCommandHandler commandHandler;
-    private final AuthQueryHandler queryHandler;
+    private final CommandHandler commandHandler;
+    private final QueryHandler queryHandler;
 
-    public AuthController(AuthCommandHandler commandHandler, AuthQueryHandler queryHandler) {
+    public AuthController(CommandHandler commandHandler, QueryHandler queryHandler) {
         this.commandHandler = commandHandler;
         this.queryHandler = queryHandler;
     }
 
-    @PostMapping("/user")
+    @PostMapping("/command/register-user")
     public void registerUser(@RequestBody RegisterUserRequest request) {
         this.commandHandler.handle(new RegisterUserCommand(request.username(), request.password(), request.firstName(), request.lastName(), request.gender()));
     }
 
-    @PostMapping("/user/{username}")
-    public String loginUser(@PathVariable String username, @RequestBody LoginUserRequest request) {
-        return this.commandHandler.handle(new LoginUserCommand(username, request.password()));
+    @PostMapping("/command/login-user")
+    public LoginUserResponse loginUser(@RequestBody LoginUserRequest request) {
+        LoginUserDocument document = this.commandHandler.handle(new LoginUserCommand(request.username(), request.password()));
+        return new LoginUserResponse(document.token());
     }
 
-    @PatchMapping("/user/password/{token}")
-    public void changeUserPassword(@PathVariable String token, @RequestBody ChangeUserPasswordRequest request) {
-        this.commandHandler.handle(new ChangeUserPasswordCommand(token, request.oldPassword(), request.newPassword()));
+    @PostMapping("/command/logout-user")
+    public void logoutUser(@RequestBody LogoutUserRequest request) {
+        this.commandHandler.handle(new LogoutUserCommand(request.token()));
     }
 
-    @PatchMapping("/user/role/{token}")
-    public void changeUserRole(@PathVariable String token, @RequestBody ChangeUserRoleRequest request) {
-        this.commandHandler.handle(new ChangeUserRoleCommand(token, request.username(), request.role()));
+    @PatchMapping("/command/change-user-password")
+    public void changeUserPassword(@RequestBody ChangeUserPasswordRequest request) {
+        this.commandHandler.handle(new ChangeUserPasswordCommand(request.token(), request.oldPassword(), request.newPassword()));
     }
 
-    @PatchMapping("/user/info/{token}")
-    public void changeUserInfo(@PathVariable String token, @RequestBody ChangeUserInfoRequest request) {
-        this.commandHandler.handle(new ChangeUserInfoCommand(token, request.firstName(), request.lastName(), request.gender()));
+    @PatchMapping("/command/change-user-role")
+    public void changeUserRole(@RequestBody ChangeUserRoleRequest request) {
+        this.commandHandler.handle(new ChangeUserRoleCommand(request.token(), request.username(), request.role()));
     }
 
-    @DeleteMapping("/user/{token}")
-    public void deleteUser(@PathVariable String token, @RequestBody DeleteUserRequest request) {
-        this.commandHandler.handle(new DeleteUserCommand(token, request.password()));
+    @PatchMapping("/command/change-user-info")
+    public void changeUserInfo(@RequestBody ChangeUserInfoRequest request) {
+        this.commandHandler.handle(new ChangeUserInfoCommand(request.token(), request.firstName(), request.lastName(), request.gender()));
     }
 
-    @GetMapping("/user/{token}")
-    public GetUserResponse getUser(@PathVariable String token) {
-        GetUserDocument document = this.queryHandler.handle(new GetUserQuery(token));
-        return new GetUserResponse(document.username(), document.role(), document.firstName(), document.lastName(), document.gender());
+    @DeleteMapping("/command/delete-user")
+    public void deleteUser(@RequestBody DeleteUserRequest request) {
+        this.commandHandler.handle(new DeleteUserCommand(request.token(), request.password()));
+    }
+
+    @GetMapping("/query/find-user")
+    public FindUserResponse findUser(@RequestBody FindUserRequest request) {
+        FindUserDocument document = this.queryHandler.handle(new FindUserQuery(request.token()));
+        return new FindUserResponse(document.username(), document.role(), document.firstName(), document.lastName(), document.gender());
     }
 
     @ExceptionHandler
