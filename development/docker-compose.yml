@@ -1,13 +1,5 @@
 version: "3.7"
 services:
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - ./rabbitmq/volume/data/:/var/lib/rabbitmq/
-      - ./rabbitmq/volume/log/:/var/log/rabbitmq/
   mongodb:
     image: mongo:latest
     environment:
@@ -17,3 +9,56 @@ services:
       - "27017:27017"
     volumes:
       - ./mongodb/volume/data/:/data/db/
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq/volume/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/volume/log/:/var/log/rabbitmq/
+  auth_app:
+    build:
+      context: ../auth
+      dockerfile: ../auth/Dockerfile
+    ports:
+      - 8081:8080
+    depends_on:
+      - mongodb
+      - rabbitmq
+  menu_app:
+    build:
+      context: ../menu
+      dockerfile: ../menu/Dockerfile
+    ports:
+      - 8082:8080
+    depends_on:
+      - mongodb
+      - rabbitmq
+  order_app:
+    build:
+      context: ../order
+      dockerfile: ../order/Dockerfile
+    ports:
+      - 8083:8080
+    depends_on:
+      - mongodb
+      - rabbitmq
+  stock_app:
+    build:
+      context: ../stock
+      dockerfile: ../stock/Dockerfile
+    ports:
+      - 8084:8080
+    depends_on:
+      - mongodb
+      - rabbitmq
+  delivery_app:
+    build:
+      context: ../delivery
+      dockerfile: ../delivery/Dockerfile
+    ports:
+      - 8085:8080
+    depends_on:
+      - mongodb
+      - rabbitmq
