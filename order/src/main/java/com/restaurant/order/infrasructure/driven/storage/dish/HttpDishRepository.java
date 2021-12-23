@@ -3,6 +3,7 @@ package com.restaurant.order.infrasructure.driven.storage.dish;
 import com.restaurant.order.core.domain.Dish;
 import com.restaurant.order.core.domain.DishID;
 import com.restaurant.order.core.ports.storage.DishRepository;
+import com.restaurant.order.infrasructure.driven.storage.dish.exception.MenuNotAvailable;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -24,17 +25,20 @@ public class HttpDishRepository implements DishRepository {
     }
 
     @Override
-    public Optional<Dish> findbyId(UUID id) {
+    public Optional<Dish> findbyId(UUID id) throws MenuNotAvailable {
         URI uri = URI.create(this.rootPath + "/menu/dish/" + id);
-        DishResult results = this.client.getForObject(uri, DishResult.class);
+        try {
+            DishResult results = this.client.getForObject(uri, DishResult.class);
 
-        if (results == null) {
-            return Optional.empty();
+            if (results == null) {
+                return Optional.empty();
+            }
+            DishID dishId = new DishID(UUID.fromString(results.getDishId().getId()));
+
+            return Optional.of(new Dish(dishId, results.getPrice(), results.getName(), results.isAvailable(), results.getMaxAmount()));
+        }catch(Exception e) {
+            throw new MenuNotAvailable("Menu service is not available");
         }
-        DishID dishId = new DishID(UUID.fromString(results.getDishId().getId()));
-
-        return Optional.of(new Dish(dishId, results.getPrice(), results.getName(), results.isAvailable(), results.getMaxAmount()));
-
 
     }
 }

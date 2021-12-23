@@ -61,6 +61,10 @@ public class Dish {
         this.name= name;
     }
 
+    public void clearMaxAmount() {
+        this.maxAmount = 0;
+    }
+
     public void addIngredient(Ingredient newIngredient){
         //                oldIngredient.setAmount(newIngredient.getAmount());
         ingredients.removeIf(oldIngredient -> oldIngredient.getIngredientId().equals(newIngredient.getIngredientId()));

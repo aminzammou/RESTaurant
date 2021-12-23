@@ -27,7 +27,7 @@ public class MenuCommandHandler {
         Dish dish = new Dish(command.getName(), command.getCategory(), command.getPrice(), command.isAvailable(), command.getIngredientList());
 
         List<ChangeDishStatus> ingredients = this.getDishStatuses(dish);
-        dish.calculateMaxAmount(ingredients);
+        dish.setMaxAmount(ingredients);
 
         this.dishRepository.save(dish);
 
@@ -60,7 +60,7 @@ public class MenuCommandHandler {
         Ingredient ingredient = new Ingredient(ingredientRepository.findById(command.getIngredient().getIngredientId()).orElseThrow(() -> new IngredientNotFound(command.getIngredient().getIngredientId().toString())),command.getIngredient().getAmount());
         dish.addIngredient(ingredient);
         List<ChangeDishStatus> ingredients = this.getDishStatuses(dish);
-        dish.calculateMaxAmount(ingredients);
+        dish.setMaxAmount(ingredients);
         this.dishRepository.save(dish);
 
         return dish;
@@ -72,9 +72,9 @@ public class MenuCommandHandler {
         dish.removeIngredient(command.getIngredientId());
         if (!dish.getIngredients().isEmpty()) {
             List<ChangeDishStatus> ingredients = this.getDishStatuses(dish);
-            dish.calculateMaxAmount(ingredients);
+            dish.setMaxAmount(ingredients);
         }else {
-            dish.setMaxAmount(0);
+            dish.clearMaxAmount();
         }
         this.dishRepository.save(dish);
 
@@ -97,7 +97,6 @@ public class MenuCommandHandler {
         for (Dish dish: dishes){
 //            List<ChangeDishStatus> ingredients = this.getDishStatuses(dish);
             dish.setMaxAmount(List.of(new ChangeDishStatus(command.getIngredientId(), command.getAmount())));
-            dish.checkForIngredients(command.getIngredientId(), command.getAmount());
             this.dishRepository.save(dish);
         }
 

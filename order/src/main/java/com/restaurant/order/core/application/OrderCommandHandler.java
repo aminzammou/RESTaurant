@@ -11,6 +11,7 @@ import com.restaurant.order.core.domain.exception.OrderNotFound;
 import com.restaurant.order.core.ports.messaging.OrderEventPublisher;
 import com.restaurant.order.core.ports.storage.DishRepository;
 import com.restaurant.order.core.ports.storage.OrderRepository;
+import com.restaurant.order.infrasructure.driven.storage.dish.exception.MenuNotAvailable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -27,7 +28,7 @@ public class OrderCommandHandler {
         this.eventPublisher = eventPublisher;
     }
 
-    public Order handle(CreateOrder command) throws OrderNotAvailable, OrderNotFound{
+    public Order handle(CreateOrder command) throws OrderNotAvailable, OrderNotFound, MenuNotAvailable {
 
         List<OrderLine> orderLines = new ArrayList<>();
         for (CreateOrderLine orderline: command.orderLineList()) {

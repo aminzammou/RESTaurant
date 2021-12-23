@@ -14,6 +14,7 @@ import com.restaurant.order.core.domain.OrderLine;
 import com.restaurant.order.core.domain.exception.OrderNotAvailable;
 import com.restaurant.order.core.domain.exception.OrderNotFound;
 import com.restaurant.order.core.ports.storage.OrderRepository;
+import com.restaurant.order.infrasructure.driven.storage.dish.exception.MenuNotAvailable;
 import com.restaurant.order.infrasructure.driver.web.request.ChangeOrderStatusRequest;
 import com.restaurant.order.infrasructure.driver.web.request.CreateOrderRequest;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public Order registerOrder(@Valid @RequestBody CreateOrderRequest request) throws OrderNotAvailable, OrderNotFound {
+    public Order registerOrder(@Valid @RequestBody CreateOrderRequest request) throws OrderNotAvailable, OrderNotFound, MenuNotAvailable {
         return this.commandHandler.handle(
                 new CreateOrder(
                         request.client.name, request.client.email, request.note,
