@@ -61,9 +61,9 @@ public class AuthController {
         this.commandHandler.handle(new DeleteUserCommand(request.token(), request.password()));
     }
 
-    @GetMapping("/query/find-user")
-    public FindUserResponse findUser(@RequestBody FindUserRequest request) {
-        FindUserDocument document = this.queryHandler.handle(new FindUserQuery(request.token()));
+    @GetMapping("/query/find-user/{token}")
+    public FindUserResponse findUser(@PathVariable String token) {
+        FindUserDocument document = this.queryHandler.handle(new FindUserQuery(token));
         return new FindUserResponse(document.username(), document.role(), document.firstName(), document.lastName(), document.gender());
     }
 

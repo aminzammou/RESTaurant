@@ -12,6 +12,7 @@ import com.restaurant.order.core.domain.exception.Unauthorized;
 import com.restaurant.order.core.ports.messaging.OrderEventPublisher;
 import com.restaurant.order.core.ports.storage.DishRepository;
 import com.restaurant.order.core.ports.storage.OrderRepository;
+import com.restaurant.order.core.ports.storage.UserRepository;
 import com.restaurant.order.infrasructure.driven.storage.dish.exception.MenuNotAvailable;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,10 @@ public class OrderCommandHandler {
     }
 
     public Order handle(CreateOrder command) throws OrderNotAvailable, OrderNotFound, MenuNotAvailable {
+        if(!this.userRepository.isLoggedIn(command.token())) {
+            throw new Unauthorized();
+        }
+
 
         List<OrderLine> orderLines = new ArrayList<>();
         for (CreateOrderLine orderline: command.orderLineList()) {
@@ -44,10 +49,6 @@ public class OrderCommandHandler {
             }else {
                 throw new OrderNotAvailable(orderLine2.getDish().getDishName() + "is niet genoeg in voorraad hiervoor. het maximale is: " + orderLine2.getDish().getMaxAmount());
             }
-        }
-
-        if(!this.userRepository.isLoggedIn(command.token())) {
-            throw new Unauthorized();
         }
 
         Order order = new Order(command.name(), command.email(), command.note(), orderLines, command.streetName(), command.houseNumber(), command.postalCode(), command.city());
