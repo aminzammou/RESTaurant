@@ -17,6 +17,6 @@ public class OrderStatusCanceled extends OrderEvent {
 
     @Override
     public String getEventKey() {
-        return "order.canceled";
+        return "order.status.canceled";
     }
 }

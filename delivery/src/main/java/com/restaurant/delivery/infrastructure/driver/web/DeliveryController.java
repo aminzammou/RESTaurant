@@ -31,7 +31,7 @@ public class DeliveryController {
     public Delivery registerOrder(@Valid @RequestBody CreateDeliveryRequest request) {
         return this.commandHandler.handle(
                 new CreateDelivery(
-                        request.departureTime, request.timeDeliverd, request.isPrepaid
+                        UUID.fromString(request.orderId)
                 )
         );
     }

@@ -1,6 +1,14 @@
 version: "3.7"
 services:
-  # https://hub.docker.com/_/rabbitmq
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongodb/volume/data/:/data/db/
   rabbitmq:
     image: rabbitmq:3-management-alpine
     ports:
@@ -9,39 +17,48 @@ services:
     volumes:
       - ./rabbitmq/volume/data/:/var/lib/rabbitmq/
       - ./rabbitmq/volume/log/:/var/log/rabbitmq/
-
-  # https://hub.docker.com/_/mongo
-  mongodb:
-    image: mongo:latest
-    container_name: mongo
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
+  authapp:
+    build:
+      context: ../auth
+      dockerfile: ../auth/Dockerfile
     ports:
-      - "27017:27017"
-    volumes:
-      - ./mongodb/volume/data/:/data/db/
-  authentication_app:
-    image: authentication
+      - "8081:8080"
+    depends_on:
+      - mongodb
+      - rabbitmq
+  menuapp:
+    build:
+      context: ../menu
+      dockerfile: ../menu/Dockerfile
     ports:
-      - 8081:8080
-
-  menu_app:
-    image: menu_app
+      - "8082:8080"
+    depends_on:
+      - mongodb
+      - rabbitmq
+  orderapp:
+    build:
+      context: ../order
+      dockerfile: ../order/Dockerfile
     ports:
-      - 8082:8080
-
-  order_app:
-    image: order_app
-    ports:
-      - 8083:8080
-
-  stock_app:
+      - "8083:8080"
+    depends_on:
+      - mongodb
+      - rabbitmq
+  stockapp:
     build:
       context: ../stock
       dockerfile: ../stock/Dockerfile
     ports:
-      - 8084:8080
+      - "8084:8080"
     depends_on:
       - mongodb
+      - rabbitmq
+  deliveryapp:
+    build:
+      context: ../delivery
+      dockerfile: ../delivery/Dockerfile
+    ports:
+      - "8085:8080"
+    depends_on:
+      - mongodb
+      - rabbitmq

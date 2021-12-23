@@ -2,13 +2,13 @@ package com.restaurant.delivery.core.domain;
 
 import com.restaurant.delivery.core.domain.event.DeliveryEvent;
 import com.restaurant.delivery.core.domain.event.DeliveryStatusDeliverd;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,26 +21,28 @@ public class Delivery {
     @Id
     private DeliveryID id;
 
-    private Date departureTime;
-    private Date timeDeliverd;
-    private boolean isPrepaid;
+    private LocalDateTime departureTime;
+    private LocalDateTime timeDeliverd;
     private DeliveryStatus deliveryStatus;
+    private UUID orderId;
 
     @Transient
     private List<DeliveryEvent> events = new ArrayList<>();
 
-    public Delivery(Date departureTime, Date timeDeliverd, boolean isPrepaid) {
+    public Delivery(UUID orderId) {
         this.id = new DeliveryID(UUID.randomUUID());
-        this.departureTime = departureTime;
-        this.timeDeliverd = timeDeliverd;
-        this.isPrepaid = isPrepaid;
+        this.departureTime = LocalDateTime.now();
+        this.timeDeliverd = null;
+        this.orderId = orderId;
+
         changeStatus(DeliveryStatus.OnTheWay);
     }
 
     public void changeStatus(DeliveryStatus deliveryStatus) {
         this.deliveryStatus = deliveryStatus;
         if (deliveryStatus == DeliveryStatus.Deliverd){
-            this.events.add(new DeliveryStatusDeliverd(deliveryStatus.toString()));
+            this.events.add(new DeliveryStatusDeliverd(deliveryStatus.toString(), orderId));
+            this.timeDeliverd = LocalDateTime.now();
         }
 
     }

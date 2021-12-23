@@ -37,7 +37,8 @@ public class OrderController {
         return this.commandHandler.handle(
                 new CreateOrder(
                         request.client.name, request.client.email, request.note,
-                        request.orderLines.stream().map((orderLineRequest -> new CreateOrderLine(orderLineRequest.id, orderLineRequest.amount))).toList()
+                        request.orderLines.stream().map((orderLineRequest -> new CreateOrderLine(orderLineRequest.id, orderLineRequest.amount))).toList(),
+                        request.streetName, request.houseNumber, request.postalCode, request.city
                 )
         );
     }

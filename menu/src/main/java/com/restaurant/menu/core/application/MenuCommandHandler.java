@@ -90,13 +90,16 @@ public class MenuCommandHandler {
     }
 
     public List<Dish> handle(ChangeDishStatus command) {
+        //1. Haal dishes op met ingredient
         List<Dish> dishes = this.getDishByIngredientId(command.getIngredientId());
 
+        //2. Pas voor elke dish zijn status aan
         for (Dish dish: dishes){
-            List<ChangeDishStatus> ingredients = this.getDishStatuses(dish);
-            dish.calculateMaxAmount(ingredients);
+//            List<ChangeDishStatus> ingredients = this.getDishStatuses(dish);
+            dish.setMaxAmount(List.of(new ChangeDishStatus(command.getIngredientId(), command.getAmount())));
+            dish.checkForIngredients(command.getIngredientId(), command.getAmount());
+            this.dishRepository.save(dish);
         }
-        this.dishRepository.saveAll(dishes);
 
         return dishes;
     }

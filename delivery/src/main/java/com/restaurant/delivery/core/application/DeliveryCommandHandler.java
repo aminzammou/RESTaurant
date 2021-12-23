@@ -25,7 +25,7 @@ public class DeliveryCommandHandler {
 
     public Delivery handle(CreateDelivery command) {
 
-        Delivery delivery = new Delivery(command.timeDeliverd(), command.departureTime(), command.isPrepaid());
+        Delivery delivery = new Delivery(command.orderId());
 
         this.publishEventsAndSave(delivery);
 
