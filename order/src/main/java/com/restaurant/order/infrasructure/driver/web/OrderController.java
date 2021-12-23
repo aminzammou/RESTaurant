@@ -11,12 +11,15 @@ import com.restaurant.order.core.domain.Dish;
 import com.restaurant.order.core.domain.DishID;
 import com.restaurant.order.core.domain.Order;
 import com.restaurant.order.core.domain.OrderLine;
+import com.restaurant.order.core.domain.exception.Unauthorized;
 import com.restaurant.order.core.domain.exception.OrderNotAvailable;
 import com.restaurant.order.core.domain.exception.OrderNotFound;
 import com.restaurant.order.core.ports.storage.OrderRepository;
 import com.restaurant.order.infrasructure.driven.storage.dish.exception.MenuNotAvailable;
 import com.restaurant.order.infrasructure.driver.web.request.ChangeOrderStatusRequest;
 import com.restaurant.order.infrasructure.driver.web.request.CreateOrderRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,7 +42,7 @@ public class OrderController {
                 new CreateOrder(
                         request.client.name, request.client.email, request.note,
                         request.orderLines.stream().map((orderLineRequest -> new CreateOrderLine(orderLineRequest.id, orderLineRequest.amount))).toList(),
-                        request.streetName, request.houseNumber, request.postalCode, request.city
+                        request.streetName, request.houseNumber, request.postalCode, request.city, request.token
                 )
         );
     }
@@ -60,6 +63,11 @@ public class OrderController {
             @RequestParam(required = false) String direction
     ) {
         return this.queryHandler.handle(new ListOrders(orderBy, direction));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Void> handleUnauthorizedException(Unauthorized exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
 //    @DeleteMapping("/{id}")
