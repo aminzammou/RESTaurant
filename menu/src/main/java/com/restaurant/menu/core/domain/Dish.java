@@ -72,19 +72,23 @@ public class Dish {
 
     public void setMaxAmount(List<ChangeDishStatus> dishIngredients) {
         List<Integer> max = new ArrayList<>();
-        for (ChangeDishStatus ingredient: dishIngredients){
-            Ingredient ingredient1 = this.ingredients.stream().filter(ing -> ing.getIngredientId().compareTo(ingredient.getIngredientId()) == 0).findAny().orElseThrow(() -> new IngredientNotFound("Ingredient not found"));
+        if (!dishIngredients.isEmpty()) {
+            for (ChangeDishStatus ingredient : dishIngredients) {
+                Ingredient ingredient1 = this.ingredients.stream().filter(ing -> ing.getIngredientId().compareTo(ingredient.getIngredientId()) == 0).findAny().orElseThrow(() -> new IngredientNotFound("Ingredient not found"));
 
-            int amountInStock = ingredient.getAmount();
+                int amountInStock = ingredient.getAmount();
 
-            int maxWithIngredient = amountInStock/ingredient1.getAmount();
+                int maxWithIngredient = amountInStock / ingredient1.getAmount();
 
-            max.add(maxWithIngredient);
+                max.add(maxWithIngredient);
 //            if(maxWithIngredient<maxAmount||maxAmount == 0){
 //                maxAmount = maxWithIngredient;
 //            }
+            }
+            maxAmount = Collections.min(max);
+        }else {
+            this.maxAmount = 0;
         }
-        maxAmount = Collections.min(max);
     }
 
     public void removeIngredient(UUID ingredientId){
