@@ -7,9 +7,11 @@ import com.restaurant.order.core.domain.Order;
 import com.restaurant.order.core.domain.OrderLine;
 import com.restaurant.order.core.domain.event.OrderEvent;
 import com.restaurant.order.core.domain.exception.OrderNotFound;
+import com.restaurant.order.core.domain.exception.Unauthorized;
 import com.restaurant.order.core.ports.messaging.OrderEventPublisher;
 import com.restaurant.order.core.ports.storage.DishRepository;
 import com.restaurant.order.core.ports.storage.OrderRepository;
+import com.restaurant.order.core.ports.storage.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,11 +20,13 @@ import java.util.*;
 public class OrderCommandHandler {
     private final OrderRepository orderRepository;
     private final DishRepository dishRepository;
+    private final UserRepository userRepository;
     private final OrderEventPublisher eventPublisher;
 
-    public OrderCommandHandler(OrderRepository orderRepository, DishRepository dishRepository, OrderEventPublisher eventPublisher) {
+    public OrderCommandHandler(OrderRepository orderRepository, DishRepository dishRepository, UserRepository userRepository, OrderEventPublisher eventPublisher) {
         this.orderRepository = orderRepository;
         this.dishRepository = dishRepository;
+        this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
     }
 
@@ -35,6 +39,9 @@ public class OrderCommandHandler {
             orderLines.add(orderLine2);
         }
 
+        if(!this.userRepository.isLoggedIn(command.token())) {
+            throw new Unauthorized();
+        }
 
         Order order = new Order(command.name(), command.email(), command.note(), orderLines, command.streetName(), command.houseNumber(), command.postalCode(), command.city());
 

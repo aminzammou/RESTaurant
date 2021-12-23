@@ -16,6 +16,7 @@ public class CreateOrderRequest {
     public int houseNumber;
     public String postalCode;
     public String city;
+    public String token;
 
     public CreateOrderRequest() {
     }
