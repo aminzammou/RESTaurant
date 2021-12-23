@@ -1,7 +1,9 @@
 package com.restaurant.stock.infrastructure.driver.messaging;
 
 import com.restaurant.stock.core.application.StockCommandHandler;
+import com.restaurant.stock.core.application.command.AddIngredient;
 import com.restaurant.stock.core.application.command.DecreaseStockByDish;
+import com.restaurant.stock.core.application.command.IncreaseStockByDish;
 import com.restaurant.stock.infrastructure.driver.messaging.data.OrderLine;
 import com.restaurant.stock.infrastructure.driver.messaging.event.CreateOrderEvent;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -23,7 +25,10 @@ public class RabbitMqEventListener {
         for(int orderLineIndex = 0; orderLineIndex < event.orders.size(); orderLineIndex++) {
             OrderLine orderLine = event.orders.get(orderLineIndex);
             for(int amountIndex = 0; amountIndex < orderLine.getAmount(); amountIndex++) {
-                this.commandHandler.handle(new DecreaseStockByDish(orderLine.getDish().getId().getId()));
+                switch (event.eventKey) {
+                    case "order.status.beingPrepared" -> this.commandHandler.handle(new DecreaseStockByDish(orderLine.getDish().getId().getId()));
+                    case "order.status.canceled" -> this.commandHandler.handle(new IncreaseStockByDish(orderLine.getDish().getId().getId()));
+                }
             }
         }
     }

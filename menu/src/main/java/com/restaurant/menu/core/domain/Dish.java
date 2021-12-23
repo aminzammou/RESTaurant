@@ -40,6 +40,7 @@ public class Dish {
         this.price = price;
         this.state = state;
         this.ingredients = ingredients;
+//        this.setMaxAmount();
     }
 
     public Dish(String name, Category category, double price, State state, List<Ingredient> ingredients, int maxAmount) {
@@ -70,6 +71,28 @@ public class Dish {
         this.ingredients.add(newIngredient);
     }
 
+//    public void setMaxAmount() {
+//        List<ChangeDishStatus> dishIngredients = this.ingredients.stream().map(ingredient -> new ChangeDishStatus(ingredient.getIngredientId(), ingredient.getAmount())).toList();
+//        List<Integer> max = new ArrayList<>();
+//        if (!dishIngredients.isEmpty()) {
+//            for (ChangeDishStatus ingredient : dishIngredients) {
+//                Ingredient ingredient1 = this.ingredients.stream().filter(ing -> ing.getIngredientId().compareTo(ingredient.getIngredientId()) == 0).findAny().orElseThrow(() -> new IngredientNotFound("Ingredient not found"));
+//
+//                int amountInStock = ingredient.getAmount();
+//
+//                int maxWithIngredient = amountInStock / ingredient1.getAmount();
+//
+//                max.add(maxWithIngredient);
+////            if(maxWithIngredient<maxAmount||maxAmount == 0){
+////                maxAmount = maxWithIngredient;
+////            }
+//            }
+//            maxAmount = Collections.min(max);
+//        }else {
+//            this.maxAmount = 0;
+//        }
+//    }
+
     public void setMaxAmount(List<ChangeDishStatus> dishIngredients) {
         List<Integer> max = new ArrayList<>();
         if (!dishIngredients.isEmpty()) {
@@ -85,7 +108,7 @@ public class Dish {
 //                maxAmount = maxWithIngredient;
 //            }
             }
-            maxAmount = Collections.min(max);
+            this.maxAmount = Collections.min(max);
         }else {
             this.maxAmount = 0;
         }

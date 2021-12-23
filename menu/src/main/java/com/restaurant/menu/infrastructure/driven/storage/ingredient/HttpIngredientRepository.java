@@ -27,6 +27,8 @@ public class HttpIngredientRepository implements IngredientRepository {
     public Optional<Ingredient> findById(UUID id) {
         URI uri = URI.create(this.rootPath + "/stock/" + id);
 
+        System.out.println(uri.toString());
+
         IngredientResult results = this.client.getForObject(uri, IngredientResult.class);
 
         if (results == null) {
