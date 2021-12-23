@@ -15,7 +15,7 @@ public class HttpUserRepository implements UserRepository {
 
     @Override
     public boolean isLoggedIn(String token) {
-        URI uri = URI.create(this.rootPath + "/auth/query/find-user");
+        URI uri = URI.create(this.rootPath + "/auth/query/find-user/" + token);
         UserResult result = this.client.getForObject(uri, UserResult.class);
 
         return result != null;
