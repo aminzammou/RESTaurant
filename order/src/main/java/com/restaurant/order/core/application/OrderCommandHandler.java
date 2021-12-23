@@ -6,12 +6,13 @@ import com.restaurant.order.core.application.command.CreateOrderLine;
 import com.restaurant.order.core.domain.Order;
 import com.restaurant.order.core.domain.OrderLine;
 import com.restaurant.order.core.domain.event.OrderEvent;
+import com.restaurant.order.core.domain.exception.OrderNotAvailable;
 import com.restaurant.order.core.domain.exception.OrderNotFound;
 import com.restaurant.order.core.domain.exception.Unauthorized;
 import com.restaurant.order.core.ports.messaging.OrderEventPublisher;
 import com.restaurant.order.core.ports.storage.DishRepository;
 import com.restaurant.order.core.ports.storage.OrderRepository;
-import com.restaurant.order.core.ports.storage.UserRepository;
+import com.restaurant.order.infrasructure.driven.storage.dish.exception.MenuNotAvailable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -30,13 +31,19 @@ public class OrderCommandHandler {
         this.eventPublisher = eventPublisher;
     }
 
-    public Order handle(CreateOrder command) {
+    public Order handle(CreateOrder command) throws OrderNotAvailable, OrderNotFound, MenuNotAvailable {
 
         List<OrderLine> orderLines = new ArrayList<>();
         for (CreateOrderLine orderline: command.orderLineList()) {
             OrderLine orderLine2 = new OrderLine(dishRepository.findbyId(orderline.getDishId()).orElseThrow(() -> new OrderNotFound(orderline.getDishId().toString()))
                     ,orderline.getAmount());
-            orderLines.add(orderLine2);
+            System.out.print(orderLine2.getDish().getMaxAmount());
+            System.out.print(orderLine2.getAmount());
+            if (orderLine2.getDish().getMaxAmount() > orderLine2.getAmount() && orderLine2.getDish().getMaxAmount() > 0){
+                orderLines.add(orderLine2);
+            }else {
+                throw new OrderNotAvailable(orderLine2.getDish().getDishName() + "is niet genoeg in voorraad hiervoor. het maximale is: " + orderLine2.getDish().getMaxAmount());
+            }
         }
 
         if(!this.userRepository.isLoggedIn(command.token())) {

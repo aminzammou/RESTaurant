@@ -7,12 +7,10 @@ import com.restaurant.menu.core.domain.exception.DishNotFound;
 import com.restaurant.menu.core.domain.exception.IngredientNotFound;
 import com.restaurant.menu.core.port.storage.DishRepository;
 import com.restaurant.menu.core.port.storage.IngredientRepository;
-import com.restaurant.menu.infrastructure.driver.web.request.ingredientTest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,7 +24,7 @@ public class MenuCommandHandler {
     }
 
     public Dish handle(CreateDish command) {
-        Dish dish = new Dish(command.getName(), command.getCategory(), command.getPrice(), command.getState(), command.getIngredientList());
+        Dish dish = new Dish(command.getName(), command.getCategory(), command.getPrice(), command.isAvailable(), command.getIngredientList());
 
         List<ChangeDishStatus> ingredients = this.getDishStatuses(dish);
         dish.setMaxAmount(ingredients);
@@ -61,6 +59,8 @@ public class MenuCommandHandler {
 
         Ingredient ingredient = new Ingredient(ingredientRepository.findById(command.getIngredient().getIngredientId()).orElseThrow(() -> new IngredientNotFound(command.getIngredient().getIngredientId().toString())),command.getIngredient().getAmount());
         dish.addIngredient(ingredient);
+        List<ChangeDishStatus> ingredients = this.getDishStatuses(dish);
+        dish.setMaxAmount(ingredients);
         this.dishRepository.save(dish);
 
         return dish;
@@ -70,6 +70,12 @@ public class MenuCommandHandler {
         Dish dish = this.getDishById(command.getId());
 
         dish.removeIngredient(command.getIngredientId());
+        if (!dish.getIngredients().isEmpty()) {
+            List<ChangeDishStatus> ingredients = this.getDishStatuses(dish);
+            dish.setMaxAmount(ingredients);
+        }else {
+            dish.clearMaxAmount();
+        }
         this.dishRepository.save(dish);
 
         return dish;
@@ -84,14 +90,15 @@ public class MenuCommandHandler {
     }
 
     public List<Dish> handle(ChangeDishStatus command) {
+        //1. Haal dishes op met ingredient
         List<Dish> dishes = this.getDishByIngredientId(command.getIngredientId());
 
+        //2. Pas voor elke dish zijn status aan
         for (Dish dish: dishes){
-            List<ChangeDishStatus> ingredients = this.getDishStatuses(dish);
-            dish.setMaxAmount(ingredients);
-            dish.checkForIngredients(command.getIngredientId(), command.getAmount());
+//            List<ChangeDishStatus> ingredients = this.getDishStatuses(dish);
+            dish.setMaxAmount(List.of(new ChangeDishStatus(command.getIngredientId(), command.getAmount())));
+            this.dishRepository.save(dish);
         }
-        this.dishRepository.saveAll(dishes);
 
         return dishes;
     }

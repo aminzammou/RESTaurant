@@ -31,6 +31,7 @@ public class StockItem {
         this.id = new StockItemId(UUID.randomUUID());
         this.ingredient = ingredient;
         this.amount = amount;
+        this.events.add(new IncreasedStockEvent(this.id.getId(), 0, amount));
     }
 
     public void increaseStock(int amount) {

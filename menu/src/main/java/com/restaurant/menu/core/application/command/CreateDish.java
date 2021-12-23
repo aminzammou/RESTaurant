@@ -2,7 +2,6 @@ package com.restaurant.menu.core.application.command;
 
 import com.restaurant.menu.core.domain.Category;
 import com.restaurant.menu.core.domain.Ingredient;
-import com.restaurant.menu.core.domain.State;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,7 +13,7 @@ public class CreateDish {
     private String name;
     private Category category;
     private double price;
-    private State state;
+    private boolean isAvailable;
     private List<Ingredient> ingredientList;
 
 }

@@ -10,6 +10,7 @@ public class CreateOrderEvent {
     public UUID eventId;
     public Instant eventDate;
     public String status;
+    public String eventKey;
     public List<OrderLine> orders;
 
 

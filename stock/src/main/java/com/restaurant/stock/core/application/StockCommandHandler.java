@@ -2,8 +2,10 @@ package com.restaurant.stock.core.application;
 
 import com.restaurant.stock.core.application.command.AddIngredient;
 import com.restaurant.stock.core.application.command.DecreaseStockByDish;
+import com.restaurant.stock.core.application.command.IncreaseStockByDish;
 import com.restaurant.stock.core.application.command.RemoveIngredient;
 import com.restaurant.stock.core.domain.*;
+import com.restaurant.stock.core.domain.event.IncreasedStockEvent;
 import com.restaurant.stock.core.domain.event.StockEvent;
 import com.restaurant.stock.core.domain.exception.StockItemNotFound;
 import com.restaurant.stock.core.domain.exception.StockLessThenZero;
@@ -61,11 +63,29 @@ public class StockCommandHandler {
 
     }
 
+    public void handle(IncreaseStockByDish command) throws Exception {
+        Optional<Dish> foundDish = this.dishRepository.findById(command.getDishId());
+        if(foundDish.isEmpty()) {
+            // HANDLE NO DISH FOUND
+            throw new Exception("Dish not found");
+        }
+        Dish dish = foundDish.get();
+        for(int i = 0; i < dish.getIngredients().size(); i++) {
+            DishIngredient dishIngredient = dish.getIngredients().get(i);
+            StockItem stockItem = this.stockItemRepository.findByIngredient(new IngredientId(dishIngredient.getIngredientId())).orElseThrow();
+            stockItem.increaseStock(dishIngredient.getAmount());
+            this.publishEvents(stockItem);
+            this.stockItemRepository.save(stockItem);
+        }
+
+    }
+
     public StockItem handle(RemoveIngredient command) throws StockLessThenZero {
         Optional<StockItem> foundStockItem = this.getStockItemByIngredient(command.getIngredientId());
         if(foundStockItem.isPresent()) {
             StockItem stockItem = foundStockItem.get();
             stockItem.decreaseStock(command.getAmount());
+            this.publishEvents(stockItem);
             return this.stockItemRepository.save(stockItem);
         }
         throw new StockItemNotFound("Stock item is not found");
@@ -85,6 +105,7 @@ public class StockCommandHandler {
         }else {
             stockItem = new StockItem(ingredient.getId(), command.getAmount());
         }
+        this.publishEvents(stockItem);
         return this.stockItemRepository.save(stockItem);
     }
 

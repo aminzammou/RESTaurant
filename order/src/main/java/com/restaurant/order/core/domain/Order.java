@@ -15,6 +15,7 @@ import java.util.UUID;
 @Document
 @Getter
 @Setter
+@NoArgsConstructor
 public class Order {
     @Id
     private OrderID id;
@@ -29,6 +30,18 @@ public class Order {
     private Address address;
     @Transient
     private List<OrderEvent> events = new ArrayList<>();
+
+    public Order(OrderID id, String name, String email, LocalDate orderDateTime, List<OrderLine> orderLines, Double totalPrice, String note, OrderStatus orderStatus, Address address) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.orderDateTime = orderDateTime;
+        this.orderLines = orderLines;
+        this.totalPrice = totalPrice;
+        this.note = note;
+        this.orderStatus = orderStatus;
+        this.address = address;
+    }
 
     public Order(String name, String email, String note, List<OrderLine> orderLines,
                  String streetName, int houseNumber, String postalCode, String city) {

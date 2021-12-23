@@ -17,7 +17,7 @@ services:
     volumes:
       - ./rabbitmq/volume/data/:/var/lib/rabbitmq/
       - ./rabbitmq/volume/log/:/var/log/rabbitmq/
-  auth_app:
+  authapp:
     build:
       context: ../auth
       dockerfile: ../auth/Dockerfile
@@ -26,7 +26,7 @@ services:
     depends_on:
       - mongodb
       - rabbitmq
-  menu_app:
+  menuapp:
     build:
       context: ../menu
       dockerfile: ../menu/Dockerfile
@@ -35,7 +35,7 @@ services:
     depends_on:
       - mongodb
       - rabbitmq
-  order_app:
+  orderapp:
     build:
       context: ../order
       dockerfile: ../order/Dockerfile
@@ -44,7 +44,7 @@ services:
     depends_on:
       - mongodb
       - rabbitmq
-  stock_app:
+  stockapp:
     build:
       context: ../stock
       dockerfile: ../stock/Dockerfile
@@ -53,7 +53,7 @@ services:
     depends_on:
       - mongodb
       - rabbitmq
-  delivery_app:
+  deliveryapp:
     build:
       context: ../delivery
       dockerfile: ../delivery/Dockerfile
